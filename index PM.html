@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meadows Eye — Facilities</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">Meadows Eye</div>
+  <a class="active" href="index.html"><i class="ti ti-layout-dashboard"></i>Dashboard</a>
+  <a href="https://tonyhdez-source.github.io/Equipment-cost-tracker/" target="_blank"><i class="ti ti-device-desktop-analytics"></i>Equipment</a>
+  <a href="pm.html"><i class="ti ti-calendar-check"></i>PM calendar</a>
+  <a href="vendors.html"><i class="ti ti-address-book"></i>Vendors</a>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <h1>Facilities dashboard</h1>
+    <p id="today-date"></p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="grid grid-5 mb-md">
+    <div class="kpi is-danger" id="kpi-requests">
+      <div class="kpi-label"><i class="ti ti-inbox" style="font-size:14px" aria-hidden="true"></i> Open requests</div>
+      <div class="kpi-val" id="k-requests">&mdash;</div>
+      <div class="kpi-sub" id="k-requests-sub"></div>
+    </div>
+    <div class="kpi is-warning" id="kpi-pm">
+      <div class="kpi-label"><i class="ti ti-calendar-check" style="font-size:14px" aria-hidden="true"></i> PM overdue</div>
+      <div class="kpi-val" id="k-pm">&mdash;</div>
+      <div class="kpi-sub" id="k-pm-sub"></div>
+    </div>
+    <div class="kpi is-success">
+      <div class="kpi-label"><i class="ti ti-check" style="font-size:14px" aria-hidden="true"></i> PM done this month</div>
+      <div class="kpi-val" id="k-done">&mdash;</div>
+      <div class="kpi-sub" id="k-done-sub"></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-building" style="font-size:14px" aria-hidden="true"></i> Locations</div>
+      <div class="kpi-val">10</div>
+      <div class="kpi-sub">Active sites</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-file-text" style="font-size:14px" aria-hidden="true"></i> Contracts</div>
+      <div class="kpi-val" id="k-contracts">&mdash;</div>
+      <div class="kpi-sub" id="k-contracts-sub"></div>
+    </div>
+  </div>
+
+  <!-- Two-column: requests + PM alerts -->
+  <div class="grid grid-2 mb-md">
+    <div class="card mb-0">
+      <div class="card-header">
+        <span class="card-title">Open requests</span>
+        <a class="card-link" href="https://tonyhdez-source.github.io/Equipment-cost-tracker/" target="_blank">View tracker &rarr;</a>
+      </div>
+      <div id="dash-requests">
+        <div class="empty"><i class="ti ti-inbox" aria-hidden="true"></i>All clear &mdash; no open requests</div>
+      </div>
+    </div>
+
+    <div class="card mb-0">
+      <div class="card-header">
+        <span class="card-title">PM alerts</span>
+        <a class="card-link" href="pm.html">Full calendar &rarr;</a>
+      </div>
+      <div id="dash-pm">
+        <div class="empty"><i class="ti ti-calendar-check" aria-hidden="true"></i>Open PM calendar to set up your schedule</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checklist -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Monday morning checklist</span>
+      <span class="text-muted" style="font-size:12px">Resets each Monday</span>
+    </div>
+    <div id="checklist"></div>
+  </div>
+
+  <!-- Locations -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Locations</span>
+    </div>
+    <div class="grid grid-auto" id="loc-overview"></div>
+  </div>
+
+  <div class="page-footer">Meadows Eye Facilities v1.0</div>
+</div>
+
+<script>
+var LOCS = [
+  "Henderson", "Camino", "Edna", "East", "Southwest",
+  "Pahrump", "Centennial", "Smoke Ranch", "Admin 1090", "Surgery Center"
+];
+var FREQ_DAYS = { Weekly: 7, Monthly: 30, Quarterly: 90, Annually: 365 };
+var now = new Date();
+
+document.getElementById("today-date").textContent =
+  now.toLocaleDateString("en-US", {
+    weekday: "long", year: "numeric", month: "long", day: "numeric"
+  });
+
+function loadDashboard() {
+  loadRequests();
+  loadPM();
+  loadChecklist();
+  loadLocations();
+  loadContracts();
+}
+
+/* ── Requests ── */
+function loadRequests() {
+  var r = [];
+  try { r = JSON.parse(localStorage.getItem("me_requests")) || []; } catch (e) {}
+
+  var open   = r.filter(function(x) { return x.status === "Open"; });
+  var ip     = r.filter(function(x) { return x.status === "In progress"; });
+  var urgent = open.filter(function(x) { return x.priority === "Urgent"; });
+
+  document.getElementById("k-requests").textContent = open.length + ip.length;
+  document.getElementById("k-requests-sub").textContent =
+    urgent.length > 0 ? urgent.length + " urgent" : "None urgent";
+  document.getElementById("kpi-requests").className =
+    "kpi " + (urgent.length > 0 ? "is-danger" : open.length > 0 ? "is-warning" : "is-success");
+
+  var el   = document.getElementById("dash-requests");
+  var show = open.concat(ip).slice(0, 6);
+
+  if (!show.length) {
+    el.innerHTML = '<div class="empty"><i class="ti ti-inbox" aria-hidden="true"></i>All clear &mdash; no open requests</div>';
+    return;
+  }
+
+  var h = "";
+  show.forEach(function(x) {
+    var dot = x.priority === "Urgent" ? "dot-red" : x.priority === "Soon" ? "dot-amber" : "dot-green";
+    var cls = x.status === "Open" ? "badge-amber" : "badge-blue";
+    h += '<div class="list-item">'
+       +   '<div class="list-label"><span class="dot ' + dot + '"></span>'
+       +     '<div><strong>' + x.id + '</strong> ' + x.location
+       +       '<div class="list-meta">' + x.issue.substring(0, 60) + '</div>'
+       +     '</div>'
+       +   '</div>'
+       +   '<span class="badge ' + cls + '">' + x.status + '</span>'
+       + '</div>';
+  });
+  el.innerHTML = h;
+}
+
+/* ── PM (reads from maintenance tracker's fac-v5 format) ── */
+/* The PM calendar stores data as: {offices: [{name, tasks: {taskId: {lastDone, nextDue, ...}}, customTaskDefs: [...]}]} */
+var PM_BUILTIN_TASKS = [
+  {id:'hvac-filter',name:'HVAC filter replacement',intervalDays:90},
+  {id:'water-filter',name:'Water filter replacement',intervalDays:180},
+  {id:'floor-clean',name:'Floor cleaning timesheet',intervalDays:7},
+  {id:'hvac-maint',name:'HVAC maintenance',intervalDays:365},
+  {id:'fire-ext',name:'Fire extinguisher inspection',intervalDays:365},
+  {id:'fire-ext-mo',name:'Fire extinguisher visual check',intervalDays:30},
+  {id:'window-clean',name:'Window cleaning',intervalDays:90},
+  {id:'sharp-pickup',name:'Sharp container pickup',intervalDays:30},
+  {id:'shred-pickup',name:'Shred pickup',intervalDays:30},
+  {id:'oct-cal',name:'OCT machine calibration',intervalDays:30},
+  {id:'slit-bulb',name:'Slit lamp bulb check',intervalDays:30},
+  {id:'vf-cal',name:'Visual field calibration',intervalDays:90},
+  {id:'phoropter',name:'Phoropter cleaning & alignment',intervalDays:90},
+  {id:'autoclave',name:'Autoclave validation test',intervalDays:7},
+  {id:'emerg-light',name:'Emergency lighting test',intervalDays:30},
+  {id:'gen-test',name:'Generator test run',intervalDays:30},
+  {id:'pest-ctrl',name:'Pest control service',intervalDays:30},
+  {id:'deep-clean',name:'Deep cleaning — exam rooms',intervalDays:90},
+  {id:'ups-test',name:'UPS battery test',intervalDays:90},
+  {id:'micro-pm',name:'Surgical microscope PM',intervalDays:90},
+  {id:'phaco-pm',name:'Phaco machine PM',intervalDays:90}
+];
+
+function loadPM() {
+  var data = null;
+  try { data = JSON.parse(localStorage.getItem("fac-v5")); } catch (e) {}
+  var offices = (data && data.offices) ? data.offices : [];
+
+  var overdue = [], dueSoon = [], totalTasks = 0, doneCount = 0;
+  var today = new Date(); today.setHours(0,0,0,0);
+
+  offices.forEach(function(office) {
+    // Get all task definitions for this office (built-in + custom)
+    var allDefs = PM_BUILTIN_TASKS.concat(office.customTaskDefs || []);
+
+    allDefs.forEach(function(td) {
+      var rec = office.tasks ? office.tasks[td.id] : null;
+      if (!rec) return;
+      totalTasks++;
+
+      var interval = (rec.customInterval) ? rec.customInterval : td.intervalDays;
+
+      // Check if it has been done and has a next due date
+      if (!rec.lastDone && !rec.nextDue) return; // not scheduled
+
+      if (rec.lastDone) doneCount++;
+
+      var nextDue = rec.nextDue;
+      if (!nextDue && rec.lastDone) {
+        var nd = new Date(rec.lastDone + "T12:00:00");
+        nd.setDate(nd.getDate() + interval);
+        nextDue = nd.toISOString().split("T")[0];
+      }
+      if (!nextDue) return;
+
+      var diff = Math.ceil((new Date(nextDue) - today) / 864e5);
+      var item = { task: td.name, loc: office.name, days: diff };
+
+      if (diff < 0) overdue.push(item);
+      else if (diff <= 7) dueSoon.push(item);
+    });
+  });
+
+  // Sort overdue by most overdue first
+  overdue.sort(function(a, b) { return a.days - b.days; });
+  dueSoon.sort(function(a, b) { return a.days - b.days; });
+
+  document.getElementById("k-pm").textContent = overdue.length;
+  document.getElementById("k-pm-sub").textContent = dueSoon.length + " due this week";
+  document.getElementById("kpi-pm").className =
+    "kpi " + (overdue.length > 0 ? "is-danger" : dueSoon.length > 0 ? "is-warning" : "is-success");
+
+  document.getElementById("k-done").textContent = doneCount;
+  document.getElementById("k-done-sub").textContent = "across " + offices.length + " locations";
+
+  var el = document.getElementById("dash-pm");
+  var alerts = overdue.concat(dueSoon).slice(0, 6);
+
+  if (!alerts.length && totalTasks > 0) {
+    el.innerHTML = '<div class="empty" style="color:var(--green)"><i class="ti ti-check" aria-hidden="true"></i>All PM tasks on track</div>';
+    return;
+  }
+  if (!offices.length || totalTasks === 0) {
+    el.innerHTML = '<div class="empty"><i class="ti ti-calendar-check" aria-hidden="true"></i>Open PM calendar to set up your schedule</div>';
+    return;
+  }
+
+  var h = "";
+  alerts.forEach(function(x) {
+    var isOverdue = x.days < 0;
+    var label = isOverdue ? Math.abs(x.days) + "d overdue" : "Due in " + x.days + "d";
+    h += '<div class="list-item">'
+       +   '<div class="list-label"><span class="dot ' + (isOverdue ? "dot-red" : "dot-amber") + '"></span>'
+       +     '<div>' + x.task + '<div class="list-meta">' + x.loc + '</div></div>'
+       +   '</div>'
+       +   '<span class="badge ' + (isOverdue ? "badge-red" : "badge-amber") + '">' + label + '</span>'
+       + '</div>';
+  });
+  el.innerHTML = h;
+}
+
+/* ── Checklist ── */
+function loadChecklist() {
+  var items = [
+    "Review open facility requests from last week",
+    "Check PM calendar — anything overdue?",
+    "30-min team huddle — assign this week's priorities",
+    "Walk through highest-traffic location for issues",
+    "Check vendor contract renewals (next 60 days)",
+    "Review last week's service call costs",
+    "Confirm scheduled vendor visits for this week",
+    "Update equipment status for ongoing repairs"
+  ];
+
+  var wk = "checklist-" + getMonday(now);
+  var ck = {};
+  try { ck = JSON.parse(localStorage.getItem(wk)) || {}; } catch (e) {}
+
+  var h = "";
+  items.forEach(function(item, i) {
+    var done = ck[i] || false;
+    h += '<div class="check-item' + (done ? ' done' : '') + '" onclick="toggleCheck(' + i + ', this)">'
+       +   '<input type="checkbox" ' + (done ? 'checked' : '') + ' onclick="event.stopPropagation()">'
+       +   '<span>' + item + '</span>'
+       + '</div>';
+  });
+  document.getElementById("checklist").innerHTML = h;
+}
+
+function getMonday(d) {
+  var day = d.getDay();
+  var diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  var m = new Date(d);
+  m.setDate(diff);
+  return m.toISOString().split("T")[0];
+}
+
+function toggleCheck(i, el) {
+  var wk = "checklist-" + getMonday(now);
+  var ck = {};
+  try { ck = JSON.parse(localStorage.getItem(wk)) || {}; } catch (e) {}
+  ck[i] = !ck[i];
+  localStorage.setItem(wk, JSON.stringify(ck));
+  el.classList.toggle("done");
+  el.querySelector("input").checked = ck[i];
+}
+
+/* ── Locations ── */
+function loadLocations() {
+  var r = [];
+  try { r = JSON.parse(localStorage.getItem("me_requests")) || []; } catch (e) {}
+
+  var h = "";
+  LOCS.forEach(function(loc) {
+    var lr = r.filter(function(x) { return x.location === loc && x.status !== "Done"; });
+    var u = lr.filter(function(x) { return x.priority === "Urgent"; }).length;
+    var bc = u > 0 ? "var(--red)" : lr.length > 0 ? "var(--amber)" : "var(--border)";
+
+    h += '<div class="loc-card" style="border-color:' + bc + '">'
+       +   '<div class="loc-name">' + loc + '</div>';
+    if (lr.length > 0) {
+      h += '<div class="loc-stat">'
+         + (u > 0 ? '<span class="text-red">' + u + ' urgent</span> · ' : '')
+         + lr.length + ' open</div>';
+    } else {
+      h += '<div class="loc-stat text-green">All clear</div>';
+    }
+    h += '</div>';
+  });
+  document.getElementById("loc-overview").innerHTML = h;
+}
+
+/* ── Contracts ── */
+function loadContracts() {
+  var v = {};
+  try { v = JSON.parse(localStorage.getItem("me_vendors")) || {}; } catch (e) {}
+  var c = v.con || [];
+  var exp = 0;
+  c.forEach(function(x) {
+    if (x.end) {
+      var e = new Date(x.end + "T00:00:00");
+      var d = Math.ceil((e - now) / 864e5);
+      if (d <= 60 && d > 0) exp++;
+    }
+  });
+  document.getElementById("k-contracts").textContent = c.length || "\u2014";
+  document.getElementById("k-contracts-sub").textContent =
+    exp > 0 ? exp + " renewing soon" : "All current";
+}
+
+loadDashboard();
+</script>
+</body>
+</html>
