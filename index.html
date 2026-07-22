@@ -1,178 +1,414 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meadows Eye — Facilities Dashboard</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#111113;--bg2:#1a1a1f;--bg3:#252530;--text:#e5e5ea;--text2:#a0a0ab;--text3:#65656e;--accent:#60a5fa;--accent-bg:#1e3a5f;--accent-text:#93c5fd;--danger:#f87171;--danger-bg:#4c1919;--danger-text:#fca5a5;--success:#4ade80;--success-bg:#14532d;--success-text:#86efac;--warning:#fbbf24;--warning-bg:#451a03;--warning-text:#fcd34d;--pro:#a78bfa;--pro-bg:#2e1065;--pro-text:#c4b5fd;--border:#2a2a35;--border2:#3a3a45;--radius:12px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
-/* NAV */
-.top-nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;gap:0;overflow-x:auto;position:sticky;top:0;z-index:50}
-.nav-brand{font-weight:600;font-size:14px;padding:12px 16px 12px 0;border-right:1px solid var(--border);margin-right:4px;white-space:nowrap;color:var(--text)}
-.nav-link{padding:12px 14px;font-size:13px;color:var(--text3);text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s}
-.nav-link:hover{color:var(--text)}
-.nav-link.active{color:var(--accent);border-bottom-color:var(--accent)}
-.nav-link i{margin-right:4px;font-size:15px;vertical-align:-2px}
-/* LAYOUT */
-.dash{max-width:1200px;margin:0 auto;padding:20px}
-.dash-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;gap:12px}
-.dash-header h1{font-size:22px;font-weight:600}
-.dash-header .date{font-size:13px;color:var(--text2)}
-.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px}
-.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden}
-.kpi-label{font-size:12px;color:var(--text2);margin-bottom:4px;display:flex;align-items:center;gap:6px}
-.kpi-val{font-size:28px;font-weight:700}
-.kpi-sub{font-size:12px;color:var(--text3);margin-top:2px}
-.kpi-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:32px;opacity:.1}
-.kpi.alert-kpi{border-left:3px solid var(--danger)}
-.kpi.warn-kpi{border-left:3px solid var(--warning)}
-.kpi.good-kpi{border-left:3px solid var(--success)}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-@media(max-width:800px){.grid-2{grid-template-columns:1fr}.kpi-row{grid-template-columns:1fr 1fr}}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
-.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.card-head h2{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
-.card-head a{font-size:12px;color:var(--accent);text-decoration:none}
-.card-head a:hover{text-decoration:underline}
-.list-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
-.list-item:last-child{border-bottom:none}
-.list-item .label{display:flex;align-items:center;gap:8px}
-.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.dot-red{background:var(--danger)}.dot-yellow{background:var(--warning)}.dot-green{background:var(--success)}.dot-blue{background:var(--accent)}
-.badge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;display:inline-block}
-.b-danger{background:var(--danger-bg);color:var(--danger-text)}
-.b-warning{background:var(--warning-bg);color:var(--warning-text)}
-.b-success{background:var(--success-bg);color:var(--success-text)}
-.b-accent{background:var(--accent-bg);color:var(--accent-text)}
-.tool-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-.tool-card{border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-decoration:none;color:var(--text);transition:all .15s;cursor:pointer;display:block}
-.tool-card:hover{border-color:var(--accent);background:var(--accent-bg);transform:translateY(-1px)}
-.tool-card h3{font-size:14px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:6px}
-.tool-card p{font-size:12px;color:var(--text2)}
-.tool-card .tool-icon{font-size:20px;color:var(--accent);margin-bottom:8px}
-.loc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
-.loc-card{border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px}
-.loc-name{font-weight:600;margin-bottom:4px}
-.loc-stat{color:var(--text2)}
-.checklist-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;cursor:pointer}
-.checklist-item:last-child{border-bottom:none}
-.checklist-item input{width:16px;height:16px;accent-color:var(--accent)}
-.checklist-item.done{color:var(--text3);text-decoration:line-through}
-.empty-state{text-align:center;padding:20px;color:var(--text3);font-size:13px}
-</style>
+<title>Equipment Cost Tracker</title>
+<meta name="description" content="Professional dark-mode equipment inventory and cost tracking application.">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<!-- SheetJS (open-source) for Excel import/export -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<!-- jsPDF + autotable (open-source) for printable PDF reports -->
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
-<nav class="top-nav">
-  <div class="nav-brand">Meadows Eye</div>
-  <a class="nav-link active" href="index.html"><i class="ti ti-layout-dashboard"></i>Dashboard</a>
-  <a class="nav-link" href="requests.html"><i class="ti ti-inbox"></i>Requests</a>
-  <a class="nav-link" href="pm.html"><i class="ti ti-calendar-check"></i>PM Calendar</a>
-  <a class="nav-link" href="vendors.html"><i class="ti ti-address-book"></i>Vendors</a>
-</nav>
-
-<div class="dash">
-<div class="dash-header">
-  <div>
-    <h1><i class="ti ti-layout-dashboard" style="vertical-align:-3px;margin-right:4px"></i> Facilities Dashboard</h1>
-    <div class="date"><span id="today-date"></span></div>
-  </div>
-  <div style="font-size:12px;color:var(--text3)"><i class="ti ti-refresh" style="cursor:pointer;font-size:16px;vertical-align:-2px" onclick="loadDashboard()" title="Refresh"></i></div>
-</div>
-
-<div class="kpi-row">
-  <div class="kpi alert-kpi" id="kpi-requests"><div class="kpi-label"><i class="ti ti-inbox" style="font-size:14px"></i> Open requests</div><div class="kpi-val" id="k-requests">—</div><div class="kpi-sub" id="k-requests-sub"></div><div class="kpi-icon"><i class="ti ti-inbox"></i></div></div>
-  <div class="kpi warn-kpi" id="kpi-pm"><div class="kpi-label"><i class="ti ti-calendar-check" style="font-size:14px"></i> PM overdue</div><div class="kpi-val" id="k-pm">—</div><div class="kpi-sub" id="k-pm-sub"></div><div class="kpi-icon"><i class="ti ti-calendar-check"></i></div></div>
-  <div class="kpi good-kpi"><div class="kpi-label"><i class="ti ti-check" style="font-size:14px"></i> PM done this month</div><div class="kpi-val" id="k-done">—</div><div class="kpi-sub" id="k-done-sub"></div><div class="kpi-icon"><i class="ti ti-check"></i></div></div>
-  <div class="kpi"><div class="kpi-label"><i class="ti ti-building" style="font-size:14px"></i> Locations</div><div class="kpi-val">10</div><div class="kpi-sub">Active sites</div><div class="kpi-icon"><i class="ti ti-building"></i></div></div>
-  <div class="kpi"><div class="kpi-label"><i class="ti ti-file-text" style="font-size:14px"></i> Contracts</div><div class="kpi-val" id="k-contracts">—</div><div class="kpi-sub" id="k-contracts-sub"></div><div class="kpi-icon"><i class="ti ti-file-text"></i></div></div>
-</div>
-
-<div class="grid-2">
-  <div class="card"><div class="card-head"><h2><i class="ti ti-inbox" style="font-size:16px;color:var(--danger)"></i> Open requests</h2><a href="requests.html">View all →</a></div><div id="dash-requests"><div class="empty-state">No open requests</div></div></div>
-  <div class="card"><div class="card-head"><h2><i class="ti ti-alert-triangle" style="font-size:16px;color:var(--warning)"></i> PM alerts</h2><a href="pm.html">Full calendar →</a></div><div id="dash-pm"><div class="empty-state">No PM data yet</div></div></div>
-</div>
-
-<div class="card"><div class="card-head"><h2><i class="ti ti-list-check" style="font-size:16px;color:var(--accent)"></i> Monday morning checklist</h2><span style="font-size:12px;color:var(--text3)">Resets each Monday</span></div><div id="checklist"></div></div>
-
-<div class="card"><div class="card-head"><h2><i class="ti ti-map-pin" style="font-size:16px;color:var(--pro)"></i> Locations at a glance</h2></div><div class="loc-grid" id="loc-overview"></div></div>
-
-<div class="card">
-  <div class="card-head"><h2><i class="ti ti-tools" style="font-size:16px;color:var(--accent)"></i> Your tools</h2></div>
-  <div class="tool-grid">
-    <a class="tool-card" href="requests.html"><div class="tool-icon"><i class="ti ti-inbox"></i></div><h3>Request form</h3><p>Clinic staff submit maintenance requests</p></a>
-    <a class="tool-card" href="pm.html"><div class="tool-icon"><i class="ti ti-calendar-check"></i></div><h3>PM calendar</h3><p>Preventive maintenance schedule & log</p></a>
-    <a class="tool-card" href="vendors.html"><div class="tool-icon"><i class="ti ti-address-book"></i></div><h3>Vendor tracker</h3><p>Emergency contacts, directory, contracts</p></a>
+<!-- ===== Lock screen (soft passcode gate) ===== -->
+<div class="lock" id="lockScreen" hidden>
+  <div class="lock__panel">
+    <span class="lock__mark" aria-hidden="true">◧</span>
+    <h1 class="lock__title">Equipment Tracker</h1>
+    <p class="lock__sub">Enter passcode to continue</p>
+    <input type="password" id="lockInput" class="lock__input" inputmode="numeric" autocomplete="off" placeholder="••••" aria-label="Passcode">
+    <p class="lock__error" id="lockError" hidden>Incorrect passcode. Try again.</p>
+    <button class="btn btn--secondary btn--block" id="lockBtn">Unlock</button>
   </div>
 </div>
 
-<div style="text-align:center;font-size:12px;color:var(--text3);margin-top:8px;padding-bottom:20px">Meadows Eye Facilities v1.0</div>
+<!-- ===== App shell ===== -->
+<div class="app">
+
+  <!-- ===== Sidebar ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="brand__mark" aria-hidden="true">◧</span>
+      <span class="brand__name">Equipment<br><strong>Tracker</strong></span>
+    </div>
+    <nav class="nav">
+      <button class="nav__item is-active" data-view="dashboard">
+        <span class="nav__icon">▤</span> Dashboard
+      </button>
+      <button class="nav__item" data-view="inventory">
+        <span class="nav__icon">▦</span> Inventory
+      </button>
+      <button class="nav__item" data-view="warranty">
+        <span class="nav__icon">◷</span> Warranty <span class="nav__badge" id="warrantyBadge" hidden>0</span>
+      </button>
+      <button class="nav__item" data-view="categories">
+        <span class="nav__icon">▥</span> Categories
+      </button>
+      <button class="nav__item" data-view="analytics">
+        <span class="nav__icon">◔</span> Analytics
+      </button>
+      <button class="nav__item" data-view="data">
+        <span class="nav__icon">⇅</span> Data &amp; Backup
+      </button>
+    </nav>
+    <div class="sidebar__foot">
+      <button class="btn btn--ghost btn--block" id="themeToggle" title="Toggle light / dark (Shift+L)">
+        <span id="themeIcon">☀</span> <span id="themeLabel">Light mode</span>
+      </button>
+      <button class="btn btn--ghost btn--block" id="lockNow" title="Lock and require passcode">🔒 Lock</button>
+      <p class="sidebar__hint">Press <kbd>?</kbd> for shortcuts</p>
+    </div>
+  </aside>
+
+  <!-- ===== Main ===== -->
+  <main class="main">
+    <!-- Topbar -->
+    <header class="topbar">
+      <button class="icon-btn only-mobile" id="menuToggle" aria-label="Menu">☰</button>
+      <div class="search">
+        <span class="search__icon">⌕</span>
+        <input type="search" id="globalSearch" placeholder="Search name, model, category, vendor, serial, location…" autocomplete="off">
+        <kbd class="search__kbd">/</kbd>
+      </div>
+      <div class="topbar__actions">
+        <button class="btn btn--secondary" id="addBtn">+ Add equipment</button>
+      </div>
+    </header>
+
+    <!-- ===== View: Dashboard ===== -->
+    <section class="view is-active" id="view-dashboard">
+      <div class="view__head">
+        <h1>Dashboard</h1>
+        <p class="muted">Overview of your equipment portfolio.</p>
+      </div>
+      <div class="cards" id="summaryCards"><!-- summary cards injected --></div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card__head"><h2>Purchases by category</h2></div>
+          <div class="chart-wrap"><canvas id="chartCategory"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card__head"><h2>Monthly spending</h2></div>
+          <div class="chart-wrap"><canvas id="chartMonthly"></canvas></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__head"><h2>Cumulative spend over time</h2></div>
+        <div class="chart-wrap chart-wrap--wide"><canvas id="chartCumulative"></canvas></div>
+      </div>
+
+      <div class="card">
+        <div class="card__head"><h2>Newest purchases</h2></div>
+        <div class="mini-list" id="newestList"></div>
+      </div>
+    </section>
+
+    <!-- ===== View: Inventory ===== -->
+    <section class="view" id="view-inventory">
+      <div class="view__head view__head--row">
+        <div>
+          <h1>Inventory</h1>
+          <p class="muted"><span id="rowCount">0</span> items · <span id="filterSummary">no filters</span></p>
+        </div>
+        <div class="view__head-actions">
+          <button class="btn btn--ghost" id="columnsBtn">▤ Columns</button>
+          <button class="btn btn--ghost" id="filtersBtn">⚙ Filters</button>
+          <button class="btn btn--secondary" id="addBtn2">+ Add</button>
+        </div>
+      </div>
+
+      <!-- Filter panel -->
+      <div class="filters card" id="filterPanel" hidden>
+        <div class="filters__grid">
+          <label>Category<select id="fCategory"></select></label>
+          <label>Vendor<select id="fVendor"></select></label>
+          <label>Status<select id="fStatus"></select></label>
+          <label>Condition<select id="fCondition"></select></label>
+          <label>Location<select id="fLocation"></select></label>
+          <label>Purchase year<select id="fYear"></select></label>
+          <label>Warranty<select id="fWarranty">
+            <option value="">Any</option>
+            <option value="active">Active</option>
+            <option value="expiring">Expiring ≤90d</option>
+            <option value="expired">Expired</option>
+            <option value="none">No date</option>
+          </select></label>
+          <label>Min price<input type="number" id="fMin" min="0" placeholder="0"></label>
+          <label>Max price<input type="number" id="fMax" min="0" placeholder="∞"></label>
+          <label class="filters__toggles">
+            <span><input type="checkbox" id="fFav"> Favorites only</span>
+            <span><input type="checkbox" id="fArchived"> Show archived</span>
+          </label>
+        </div>
+        <div class="filters__foot">
+          <button class="btn btn--ghost" id="clearFilters">Clear filters</button>
+        </div>
+      </div>
+
+      <!-- Bulk bar -->
+      <div class="bulkbar" id="bulkbar" hidden>
+        <span><strong id="bulkCount">0</strong> selected</span>
+        <button class="btn btn--ghost btn--sm" id="bulkEdit">Bulk edit</button>
+        <button class="btn btn--ghost btn--sm" id="bulkFav">★ Favorite</button>
+        <button class="btn btn--ghost btn--sm" id="bulkArchive">Archive</button>
+        <button class="btn btn--danger btn--sm" id="bulkDelete">Delete</button>
+        <button class="btn btn--ghost btn--sm" id="bulkClear">Clear</button>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrap card">
+        <table class="table" id="equipTable">
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="empty" id="emptyState" hidden>
+          <p class="empty__title">No equipment matches your view.</p>
+          <p class="muted">Add an item, clear filters, or import a spreadsheet to get started.</p>
+          <button class="btn btn--secondary" id="emptyAdd">+ Add equipment</button>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pager">
+        <label class="pager__size">Rows
+          <select id="pageSize">
+            <option>10</option><option selected>25</option><option>50</option><option>100</option>
+          </select>
+        </label>
+        <div class="pager__nav">
+          <button class="btn btn--ghost btn--sm" id="prevPage">‹ Prev</button>
+          <span id="pageInfo">1 / 1</span>
+          <button class="btn btn--ghost btn--sm" id="nextPage">Next ›</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== View: Warranty ===== -->
+    <section class="view" id="view-warranty">
+      <div class="view__head"><h1>Warranty alerts</h1><p class="muted">Anything expired or expiring soon, so nothing lapses unnoticed.</p></div>
+      <div class="cards cards--3" id="warrantyCards"></div>
+
+      <div class="card">
+        <div class="card__head"><h2>Expired</h2><span class="count-chip count-chip--danger" id="expiredCount">0</span></div>
+        <div class="table-wrap"><table class="table"><tbody id="expiredBody"></tbody></table></div>
+        <p class="empty-inline" id="expiredEmpty" hidden>Nothing expired. Good.</p>
+      </div>
+
+      <div class="card">
+        <div class="card__head"><h2>Expiring within 30 days</h2><span class="count-chip count-chip--warn" id="soon30Count">0</span></div>
+        <div class="table-wrap"><table class="table"><tbody id="soon30Body"></tbody></table></div>
+        <p class="empty-inline" id="soon30Empty" hidden>Nothing expiring in the next 30 days.</p>
+      </div>
+
+      <div class="card">
+        <div class="card__head"><h2>Expiring in 31–90 days</h2><span class="count-chip" id="soon90Count">0</span></div>
+        <div class="table-wrap"><table class="table"><tbody id="soon90Body"></tbody></table></div>
+        <p class="empty-inline" id="soon90Empty" hidden>Nothing expiring in this window.</p>
+      </div>
+    </section>
+
+    <!-- ===== View: Categories ===== -->
+    <section class="view" id="view-categories">
+      <div class="view__head view__head--row">
+        <div>
+          <h1>Spend by category</h1>
+          <p class="muted">Total spent on each equipment type over time. One chart per category.</p>
+        </div>
+        <div class="view__head-actions">
+          <label class="cat-toggle">Group by
+            <select id="catGrouping">
+              <option value="each">Each purchase</option>
+              <option value="cumulative">Running total</option>
+              <option value="monthly">Per month</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="cat-grid" id="categoryGrid"></div>
+      <div class="empty" id="categoryEmpty" hidden>
+        <p class="empty__title">No priced equipment yet.</p>
+        <p class="muted">Add equipment with a category and purchase price to see per-category spending here.</p>
+      </div>
+    </section>
+
+    <!-- ===== View: Analytics ===== -->
+    <section class="view" id="view-analytics">
+      <div class="view__head"><h1>Analytics</h1><p class="muted">Spending and inventory insights.</p></div>
+      <div class="grid-2">
+        <div class="card"><div class="card__head"><h2>Vendor spending</h2></div><div class="chart-wrap"><canvas id="chartVendor"></canvas></div></div>
+        <div class="card"><div class="card__head"><h2>Equipment count by category</h2></div><div class="chart-wrap"><canvas id="chartCount"></canvas></div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card"><div class="card__head"><h2>Most expensive equipment</h2></div><div class="mini-list" id="expensiveList"></div></div>
+        <div class="card"><div class="card__head"><h2>Average cost by category</h2></div><div class="mini-list" id="avgList"></div></div>
+      </div>
+    </section>
+
+    <!-- ===== View: Data & Backup ===== -->
+    <section class="view" id="view-data">
+      <div class="view__head"><h1>Data &amp; Backup</h1><p class="muted">Import, export, back up, and restore your database.</p></div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card__head"><h2>Import</h2></div>
+          <p class="muted">Supports CSV, Excel (.xlsx), and Google Sheets exports. Columns are auto-mapped; unmatched columns can be mapped by hand.</p>
+          <div class="stack">
+            <label class="file-drop" id="importDrop">
+              <input type="file" id="importFile" accept=".csv,.xlsx,.xls,.tsv" hidden>
+              <span>⇪ Drop a file here or <u>browse</u></span>
+            </label>
+            <button class="btn btn--ghost" id="loadSample">Load demo data</button>
+            <a class="btn btn--ghost" href="price-research.html" style="text-decoration:none">◎ Open auction price research →</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card__head"><h2>Export</h2></div>
+          <div class="stack">
+            <button class="btn btn--ghost btn--block" data-export="csv">Export CSV</button>
+            <button class="btn btn--ghost btn--block" data-export="xlsx">Export Excel (.xlsx)</button>
+            <button class="btn btn--ghost btn--block" data-export="json">Export JSON</button>
+            <button class="btn btn--ghost btn--block" data-export="pdf">Export printable PDF report</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card__head"><h2>Backup</h2></div>
+          <p class="muted">A backup is a full JSON snapshot of your database.</p>
+          <div class="stack">
+            <button class="btn btn--ghost btn--block" id="exportBackup">Export backup file</button>
+            <label class="btn btn--ghost btn--block" style="text-align:center;cursor:pointer">
+              Import backup file
+              <input type="file" id="importBackup" accept=".json" hidden>
+            </label>
+            <button class="btn btn--ghost btn--block" id="restoreBackup">Restore last auto-backup</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card__head"><h2>Danger zone</h2></div>
+          <p class="muted">Resetting clears all equipment from this browser. Export a backup first.</p>
+          <button class="btn btn--danger btn--block" id="resetDb">Reset database</button>
+        </div>
+      </div>
+      <p class="muted save-note">Auto-save is on. Last saved: <span id="lastSaved">—</span></p>
+    </section>
+  </main>
 </div>
 
-<script>
-var LOCS=["Henderson","Camino","Edna","East","Southwest","Pahrump","Centennial","Smoke Ranch","Admin 1090","Surgery Center"];
-var FREQ_DAYS={Weekly:7,Monthly:30,Quarterly:90,Annually:365};
-var now=new Date();
-document.getElementById('today-date').textContent=now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+<!-- ===== Edit / Add drawer ===== -->
+<div class="drawer" id="drawer" hidden>
+  <div class="drawer__backdrop" data-close></div>
+  <div class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+    <div class="drawer__head">
+      <h2 id="drawerTitle">Add equipment</h2>
+      <button class="icon-btn" data-close aria-label="Close">✕</button>
+    </div>
+    <div class="drawer__body">
+      <form id="equipForm" class="form-grid"><!-- fields injected --></form>
 
-function loadDashboard(){loadRequests();loadPM();loadChecklist();loadLocations();loadContracts()}
+      <div class="comments" id="commentsBlock" hidden>
+        <h3>Comments</h3>
+        <div class="comments__list" id="commentsList"></div>
+        <div class="comments__add">
+          <textarea id="newComment" rows="2" placeholder="Add a comment…"></textarea>
+          <button class="btn btn--secondary btn--sm" id="addComment" type="button">Post</button>
+        </div>
+      </div>
+    </div>
+    <div class="drawer__foot">
+      <button class="btn btn--ghost" data-close>Cancel</button>
+      <button class="btn btn--secondary" id="saveEquip">Save equipment</button>
+    </div>
+  </div>
+</div>
 
-function loadRequests(){
-  var r=[];try{r=JSON.parse(localStorage.getItem('me_requests'))||[]}catch(e){}
-  var open=r.filter(x=>x.status==='Open'),ip=r.filter(x=>x.status==='In progress'),urgent=open.filter(x=>x.priority==='Urgent');
-  document.getElementById('k-requests').textContent=open.length+ip.length;
-  document.getElementById('k-requests-sub').textContent=urgent.length>0?urgent.length+' urgent':'None urgent';
-  document.getElementById('kpi-requests').className='kpi '+(urgent.length>0?'alert-kpi':open.length>0?'warn-kpi':'good-kpi');
-  var c=document.getElementById('dash-requests'),show=open.concat(ip).slice(0,6);
-  if(!show.length){c.innerHTML='<div class="empty-state">All clear — no open requests</div>';return}
-  var h='';show.forEach(x=>{var dot=x.priority==='Urgent'?'dot-red':x.priority==='Soon'?'dot-yellow':'dot-green';h+='<div class="list-item"><div class="label"><span class="dot '+dot+'"></span><div><strong>'+x.id+'</strong> '+x.location+'<div style="font-size:11px;color:var(--text3)">'+x.issue.substring(0,60)+'</div></div></div><span class="badge '+(x.status==='Open'?'b-warning':'b-accent')+'">'+x.status+'</span></div>'});
-  c.innerHTML=h;
-}
+<!-- ===== Column-mapping modal ===== -->
+<div class="modal" id="mapModal" hidden>
+  <div class="modal__backdrop" data-close></div>
+  <div class="modal__panel" role="dialog" aria-modal="true">
+    <div class="modal__head"><h2>Map spreadsheet columns</h2><button class="icon-btn" data-close>✕</button></div>
+    <div class="modal__body">
+      <p class="muted">Match your file's columns to equipment fields. Auto-detected matches are pre-filled.</p>
+      <div class="map-grid" id="mapGrid"></div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost" data-close>Cancel</button>
+      <button class="btn btn--secondary" id="confirmMap">Import rows</button>
+    </div>
+  </div>
+</div>
 
-function loadPM(){
-  var t=[];try{t=JSON.parse(localStorage.getItem('me_pm_tasks'))||[]}catch(e){}
-  var log=[];try{log=JSON.parse(localStorage.getItem('me_pm_log'))||[]}catch(e){}
-  var overdue=[],dueSoon=[];
-  t.forEach(x=>{if(!x.last){overdue.push(x);return}var n=new Date(x.last+'T00:00:00');n.setDate(n.getDate()+(FREQ_DAYS[x.freq]||30));var today=new Date();today.setHours(0,0,0,0);var d=Math.ceil((n-today)/(864e5));if(d<0)overdue.push(x);else if(d<=7)dueSoon.push(x)});
-  document.getElementById('k-pm').textContent=overdue.length;
-  document.getElementById('k-pm-sub').textContent=dueSoon.length+' due this week';
-  document.getElementById('kpi-pm').className='kpi '+(overdue.length>0?'alert-kpi':dueSoon.length>0?'warn-kpi':'good-kpi');
-  var ms=new Date(now.getFullYear(),now.getMonth(),1);var dm=log.filter(l=>new Date(l.date)>=ms).length;
-  document.getElementById('k-done').textContent=dm;
-  document.getElementById('k-done-sub').textContent='of '+t.length+' total tasks';
-  var c=document.getElementById('dash-pm'),alerts=overdue.concat(dueSoon).slice(0,6);
-  if(!alerts.length&&t.length){c.innerHTML='<div class="empty-state" style="color:var(--success)"><i class="ti ti-check" style="font-size:20px"></i><br>All PM tasks on track</div>';return}
-  if(!t.length){c.innerHTML='<div class="empty-state">Open PM calendar to set up schedule</div>';return}
-  var h='';alerts.forEach(x=>{var o=overdue.includes(x);h+='<div class="list-item"><div class="label"><span class="dot '+(o?'dot-red':'dot-yellow')+'"></span><div>'+x.task+'<div style="font-size:11px;color:var(--text3)">'+x.loc+' · '+x.freq+'</div></div></div><span class="badge '+(o?'b-danger':'b-warning')+'">'+(o?'Overdue':'Due soon')+'</span></div>'});
-  c.innerHTML=h;
-}
+<!-- ===== Columns modal ===== -->
+<div class="modal" id="colsModal" hidden>
+  <div class="modal__backdrop" data-close></div>
+  <div class="modal__panel modal__panel--sm" role="dialog" aria-modal="true">
+    <div class="modal__head"><h2>Visible columns</h2><button class="icon-btn" data-close>✕</button></div>
+    <div class="modal__body"><div class="cols-grid" id="colsGrid"></div></div>
+    <div class="modal__foot"><button class="btn btn--secondary" data-close>Done</button></div>
+  </div>
+</div>
 
-function loadChecklist(){
-  var items=["Review open facility requests from last week","Check PM calendar — anything overdue?","30-min team huddle — assign this week's priorities","Walk through highest-traffic location for issues","Check vendor contract renewals (next 60 days)","Review last week's service call costs","Confirm scheduled vendor visits for this week","Update equipment status for any ongoing repairs"];
-  var wk='checklist-'+getMonday(now);var ck={};try{ck=JSON.parse(localStorage.getItem(wk))||{}}catch(e){}
-  var h='';items.forEach(function(item,i){var done=ck[i]||false;h+='<div class="checklist-item'+(done?' done':'')+'" onclick="toggleCheck('+i+',this)"><input type="checkbox" '+(done?'checked':'')+' onclick="event.stopPropagation()"><span>'+item+'</span></div>'});
-  document.getElementById('checklist').innerHTML=h;
-}
-function getMonday(d){var day=d.getDay();var diff=d.getDate()-day+(day===0?-6:1);var m=new Date(d);m.setDate(diff);return m.toISOString().split('T')[0]}
-function toggleCheck(i,el){var wk='checklist-'+getMonday(now);var ck={};try{ck=JSON.parse(localStorage.getItem(wk))||{}}catch(e){}ck[i]=!ck[i];localStorage.setItem(wk,JSON.stringify(ck));el.classList.toggle('done');el.querySelector('input').checked=ck[i]}
+<!-- ===== Bulk edit modal ===== -->
+<div class="modal" id="bulkModal" hidden>
+  <div class="modal__backdrop" data-close></div>
+  <div class="modal__panel modal__panel--sm" role="dialog" aria-modal="true">
+    <div class="modal__head"><h2>Bulk edit selected</h2><button class="icon-btn" data-close>✕</button></div>
+    <div class="modal__body">
+      <p class="muted">Only fields you fill will be applied to all selected items.</p>
+      <label>Category<input id="bulkCategory" placeholder="Leave blank to skip"></label>
+      <label>Vendor<input id="bulkVendor" placeholder="Leave blank to skip"></label>
+      <label>Location<input id="bulkLocation" placeholder="Leave blank to skip"></label>
+      <label>Status<input id="bulkStatus" placeholder="Leave blank to skip"></label>
+      <label>Condition<input id="bulkCondition" placeholder="Leave blank to skip"></label>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost" data-close>Cancel</button>
+      <button class="btn btn--secondary" id="applyBulk">Apply changes</button>
+    </div>
+  </div>
+</div>
 
-function loadLocations(){
-  var r=[];try{r=JSON.parse(localStorage.getItem('me_requests'))||[]}catch(e){}
-  var h='';LOCS.forEach(loc=>{var lr=r.filter(x=>x.location===loc&&x.status!=='Done');var u=lr.filter(x=>x.priority==='Urgent').length;var bc=u>0?'var(--danger)':lr.length>0?'var(--warning)':'var(--border)';h+='<div class="loc-card" style="border-color:'+bc+'"><div class="loc-name">'+loc+'</div>'+(lr.length>0?'<div class="loc-stat">'+(u>0?'<span style="color:var(--danger)">'+u+' urgent</span> · ':'')+lr.length+' open</div>':'<div class="loc-stat" style="color:var(--success)">All clear</div>')+'</div>'});
-  document.getElementById('loc-overview').innerHTML=h;
-}
+<!-- ===== Confirm dialog ===== -->
+<div class="modal" id="confirmModal" hidden>
+  <div class="modal__backdrop"></div>
+  <div class="modal__panel modal__panel--sm" role="dialog" aria-modal="true">
+    <div class="modal__head"><h2 id="confirmTitle">Are you sure?</h2></div>
+    <div class="modal__body"><p id="confirmText" class="muted"></p></div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost" id="confirmCancel">Cancel</button>
+      <button class="btn btn--danger" id="confirmOk">Confirm</button>
+    </div>
+  </div>
+</div>
 
-function loadContracts(){
-  var v={};try{v=JSON.parse(localStorage.getItem('me_vendors'))||{}}catch(e){}var c=v.con||[];var exp=0;
-  c.forEach(x=>{if(x.end){var e=new Date(x.end+'T00:00:00');var d=Math.ceil((e-now)/864e5);if(d<=60&&d>0)exp++}});
-  document.getElementById('k-contracts').textContent=c.length||'—';
-  document.getElementById('k-contracts-sub').textContent=exp>0?exp+' renewing soon':'All current';
-}
+<!-- ===== Shortcuts modal ===== -->
+<div class="modal" id="helpModal" hidden>
+  <div class="modal__backdrop" data-close></div>
+  <div class="modal__panel modal__panel--sm" role="dialog" aria-modal="true">
+    <div class="modal__head"><h2>Keyboard shortcuts</h2><button class="icon-btn" data-close>✕</button></div>
+    <div class="modal__body">
+      <ul class="shortcuts">
+        <li><kbd>/</kbd> Focus search</li>
+        <li><kbd>N</kbd> New equipment</li>
+        <li><kbd>Esc</kbd> Close dialog</li>
+        <li><kbd>Shift</kbd>+<kbd>L</kbd> Toggle theme</li>
+        <li><kbd>Ctrl/⌘</kbd>+<kbd>Z</kbd> Undo delete</li>
+        <li><kbd>?</kbd> This help</li>
+      </ul>
+    </div>
+    <div class="modal__foot"><button class="btn btn--secondary" data-close>Got it</button></div>
+  </div>
+</div>
 
-loadDashboard();
-</script>
+<!-- ===== Toasts ===== -->
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<!-- Chart.js (open-source) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
