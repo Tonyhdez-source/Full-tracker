@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meadows Eye — Facilities Requests</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#111113;--bg2:#1a1a1f;--bg3:#252530;--text:#e5e5ea;--text2:#a0a0ab;--text3:#65656e;--accent:#60a5fa;--accent-bg:#1e3a5f;--danger:#dc2626;--danger-bg:#4c1919;--danger-text:#fca5a5;--success:#4ade80;--success-bg:#14532d;--success-text:#86efac;--warning:#fbbf24;--warning-bg:#451a03;--warning-text:#fcd34d;--border:#2a2a35;--border2:#3a3a45;--radius:10px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
+.top-nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;gap:0;overflow-x:auto;position:sticky;top:0;z-index:50}
+.nav-brand{font-weight:600;font-size:14px;padding:12px 16px 12px 0;border-right:1px solid var(--border);margin-right:4px;white-space:nowrap}
+.nav-link{padding:12px 14px;font-size:13px;color:var(--text3);text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s}
+.nav-link:hover{color:var(--text)}.nav-link.active{color:var(--accent);border-bottom-color:var(--accent)}
+.nav-link i{margin-right:4px;font-size:15px;vertical-align:-2px}
+.container{max-width:640px;margin:0 auto;padding:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;margin-bottom:16px}
+.header{text-align:center;margin-bottom:8px}.header h1{font-size:22px;font-weight:600;margin-bottom:4px}.header p{font-size:14px;color:var(--text2)}
+.form-group{margin-bottom:20px}.form-group label{display:block;font-size:13px;font-weight:500;margin-bottom:6px}.required::after{content:" *";color:var(--danger)}
+input[type="text"],input[type="date"],textarea,select{width:100%;font-size:14px;padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);color:var(--text);font-family:var(--font)}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+textarea{resize:vertical;min-height:100px}
+.radio-group{display:flex;flex-wrap:wrap;gap:8px}.radio-opt{flex:1;min-width:120px}
+.radio-opt input{display:none}
+.radio-opt label{display:block;padding:10px 14px;border:1px solid var(--border);border-radius:6px;text-align:center;font-size:13px;cursor:pointer;transition:all .15s}
+.radio-opt input:checked+label{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);font-weight:500}
+.radio-opt label:hover{border-color:var(--border2);background:var(--bg3)}
+.priority-group .radio-opt:nth-child(1) input:checked+label{border-color:var(--danger);background:var(--danger-bg);color:var(--danger-text)}
+.priority-group .radio-opt:nth-child(2) input:checked+label{border-color:var(--warning);background:var(--warning-bg);color:var(--warning-text)}
+.priority-group .radio-opt:nth-child(3) input:checked+label{border-color:var(--success);background:var(--success-bg);color:var(--success-text)}
+.btn{width:100%;padding:14px;font-size:15px;font-weight:600;border:none;border-radius:6px;cursor:pointer;font-family:var(--font)}
+.btn-submit{background:var(--accent);color:#fff}.btn-submit:hover{opacity:.9}
+.btn-reset{background:none;color:var(--text3);border:1px solid var(--border);margin-top:8px;font-weight:400;font-size:13px}
+.success-msg{display:none;text-align:center;padding:40px 20px}
+.success-msg h2{font-size:20px;margin-bottom:8px;color:var(--success-text)}
+.ticket{font-size:28px;font-weight:700;color:var(--accent);margin-bottom:4px}
+.req-item{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border:1px solid var(--border);border-radius:6px;margin-bottom:8px;font-size:13px}
+.req-id{font-weight:600;color:var(--accent)}.req-meta{color:var(--text2);font-size:12px}
+.req-status{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px}
+.status-open{background:var(--warning-bg);color:var(--warning-text)}
+.status-progress{background:var(--accent-bg);color:var(--accent)}
+.status-done{background:var(--success-bg);color:var(--success-text)}
+.tab-row{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border)}
+.tab-btn{padding:10px 16px;font-size:13px;font-weight:500;border:none;background:none;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;font-family:var(--font)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.admin-badge{font-size:11px;background:var(--bg3);color:var(--text2);padding:2px 8px;border-radius:4px;margin-left:6px}
+.count-badge{background:var(--danger);color:#fff;font-size:11px;padding:1px 7px;border-radius:10px;margin-left:4px}
+.btn-sm{padding:6px 12px;font-size:12px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--text);cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:4px}
+.btn-sm:hover{background:var(--bg3)}
+@media(max-width:500px){.card{padding:20px 16px}.radio-opt{min-width:90px}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+</head>
+<body>
+<nav class="top-nav">
+  <div class="nav-brand">Meadows Eye</div>
+  <a class="nav-link" href="index.html"><i class="ti ti-layout-dashboard"></i>Dashboard</a>
+  <a class="nav-link active" href="requests.html"><i class="ti ti-inbox"></i>Requests</a>
+  <a class="nav-link" href="pm.html"><i class="ti ti-calendar-check"></i>PM Calendar</a>
+  <a class="nav-link" href="vendors.html"><i class="ti ti-address-book"></i>Vendors</a>
+</nav>
+
+<div class="container">
+  <div class="card"><div class="header"><h1>Facilities Request</h1><p>Submit a maintenance or repair request</p></div></div>
+
+  <div class="tab-row">
+    <button class="tab-btn active" data-tab="form">New request</button>
+    <button class="tab-btn" data-tab="history">My requests <span class="count-badge" id="open-count" style="display:none">0</span></button>
+    <button class="tab-btn" data-tab="admin">Admin<span class="admin-badge">Facilities</span></button>
+  </div>
+
+  <div class="tab-panel active" id="panel-form">
+    <div class="card" id="form-card">
+      <div class="form-group"><label class="required">Your name</label><input type="text" id="f-name" placeholder="First and last name"></div>
+      <div class="form-group"><label class="required">Location</label><select id="f-location"><option value="">Select location...</option><option>Henderson</option><option>Camino</option><option>Edna</option><option>East</option><option>Southwest</option><option>Pahrump</option><option>Centennial</option><option>Smoke Ranch</option><option>Admin 1090</option><option>Surgery Center</option></select></div>
+      <div class="form-group"><label class="required">Category</label><select id="f-category"><option value="">Select category...</option><option>Equipment — diagnostic (OCT, slit lamp, visual field, etc.)</option><option>Equipment — surgical</option><option>Equipment — other (printer, phone, computer)</option><option>HVAC — too hot / too cold / humidity</option><option>Electrical — lights, outlets, power</option><option>Plumbing — leak, drain, water</option><option>Furniture — chairs, desks, cabinets</option><option>Safety — fire extinguisher, exit sign, trip hazard</option><option>Cleaning / Janitorial</option><option>Doors / Locks / Keys / Badges</option><option>Pest issue</option><option>Signage</option><option>Other</option></select></div>
+      <div class="form-group"><label class="required">Priority</label><div class="radio-group priority-group"><div class="radio-opt"><input type="radio" name="priority" id="p-urgent" value="Urgent"><label for="p-urgent">🔴 Urgent<br><span style="font-size:11px;font-weight:400">Patient care blocked</span></label></div><div class="radio-opt"><input type="radio" name="priority" id="p-soon" value="Soon"><label for="p-soon">🟡 Soon<br><span style="font-size:11px;font-weight:400">Working but needs fix</span></label></div><div class="radio-opt"><input type="radio" name="priority" id="p-low" value="Low" checked><label for="p-low">🟢 Low<br><span style="font-size:11px;font-weight:400">When you get to it</span></label></div></div></div>
+      <div class="form-group"><label class="required">What's the issue?</label><textarea id="f-issue" placeholder="Describe the problem. Include room number, equipment name/model if you know it."></textarea></div>
+      <div class="form-group"><label>Equipment name or asset tag</label><input type="text" id="f-equipment" placeholder="e.g. Zeiss Cirrus OCT, Room 3 slit lamp"></div>
+      <div class="form-group"><label>Best time to access the area?</label><input type="text" id="f-access" placeholder="e.g. Before 8am, lunch break, after last patient"></div>
+      <button class="btn btn-submit" onclick="submitRequest()">Submit request</button>
+      <button class="btn btn-reset" onclick="resetForm()">Clear form</button>
+    </div>
+    <div class="card success-msg" id="success-card"><div style="font-size:48px;margin-bottom:12px">✅</div><h2>Request submitted</h2><p style="font-size:14px;color:var(--text2)">Your ticket number:</p><div class="ticket" id="ticket-num"></div><p style="font-size:14px;color:var(--text2)">The facilities team has been notified.</p><button class="btn btn-submit" onclick="newRequest()" style="max-width:200px;margin:0 auto">Submit another</button></div>
+  </div>
+
+  <div class="tab-panel" id="panel-history"><div class="card"><div id="my-requests"><p style="font-size:14px;color:var(--text3);text-align:center;padding:20px 0">No requests yet.</p></div></div></div>
+
+  <div class="tab-panel" id="panel-admin">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+        <h3 style="font-size:15px;font-weight:600">All requests</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <select id="admin-filter" style="width:130px;font-size:12px;padding:6px 8px;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:4px"><option value="">All statuses</option><option value="Open">Open</option><option value="In progress">In progress</option><option value="Done">Done</option></select>
+          <select id="admin-loc-filter" style="width:130px;font-size:12px;padding:6px 8px;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:4px"><option value="">All locations</option><option>Henderson</option><option>Camino</option><option>Edna</option><option>East</option><option>Southwest</option><option>Pahrump</option><option>Centennial</option><option>Smoke Ranch</option><option>Admin 1090</option><option>Surgery Center</option></select>
+          <button class="btn-sm" onclick="exportRequests()"><i class="ti ti-download" style="font-size:14px"></i>CSV</button>
+        </div>
+      </div>
+      <div id="admin-list"></div>
+      <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:16px;font-size:13px;color:var(--text2);flex-wrap:wrap">
+        <span>Total: <strong id="admin-total">0</strong></span>
+        <span>Open: <strong id="admin-open" style="color:var(--warning-text)">0</strong></span>
+        <span>In progress: <strong id="admin-ip" style="color:var(--accent)">0</strong></span>
+        <span>Done: <strong id="admin-done" style="color:var(--success-text)">0</strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.tab-btn').forEach(t=>{t.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));t.classList.add('active');document.getElementById('panel-'+t.dataset.tab).classList.add('active');if(t.dataset.tab==='history')renderMyRequests();if(t.dataset.tab==='admin')renderAdmin()})});
+function getRequests(){try{return JSON.parse(localStorage.getItem('me_requests'))||[]}catch(e){return[]}}
+function saveRequests(r){localStorage.setItem('me_requests',JSON.stringify(r))}
+function generateId(){var d=new Date();return 'ME-'+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'-'+String(Math.floor(Math.random()*9000)+1000)}
+function submitRequest(){
+  var n=document.getElementById('f-name').value.trim(),l=document.getElementById('f-location').value,c=document.getElementById('f-category').value,p=document.querySelector('input[name="priority"]:checked').value,i=document.getElementById('f-issue').value.trim(),e=document.getElementById('f-equipment').value.trim(),a=document.getElementById('f-access').value.trim();
+  if(!n||!l||!c||!i){alert('Please fill in all required fields.');return}
+  var id=generateId();var r=getRequests();r.unshift({id:id,name:n,location:l,category:c,priority:p,issue:i,equipment:e,access:a,status:'Open',submitted:new Date().toISOString(),notes:''});saveRequests(r);
+  document.getElementById('ticket-num').textContent=id;document.getElementById('form-card').style.display='none';document.getElementById('success-card').style.display='block';updateOpenCount();
+}
+function newRequest(){resetForm();document.getElementById('form-card').style.display='block';document.getElementById('success-card').style.display='none'}
+function resetForm(){['f-name','f-issue','f-equipment','f-access'].forEach(id=>document.getElementById(id).value='');['f-location','f-category'].forEach(id=>document.getElementById(id).value='');document.getElementById('p-low').checked=true}
+function renderMyRequests(){
+  var r=getRequests(),c=document.getElementById('my-requests');
+  if(!r.length){c.innerHTML='<p style="text-align:center;color:var(--text3);padding:20px">No requests yet.</p>';return}
+  var h='';r.forEach(x=>{var sc=x.status==='Open'?'status-open':x.status==='In progress'?'status-progress':'status-done';var dot=x.priority==='Urgent'?'🔴 ':x.priority==='Soon'?'🟡 ':'🟢 ';h+='<div class="req-item"><div><span class="req-id">'+x.id+'</span><div class="req-meta">'+dot+x.location+' · '+x.category+'</div><div class="req-meta">'+new Date(x.submitted).toLocaleDateString()+' — '+x.issue.substring(0,80)+'</div>'+(x.notes?'<div class="req-meta" style="margin-top:4px;color:var(--accent)">📝 '+x.notes+'</div>':'')+'</div><span class="req-status '+sc+'">'+x.status+'</span></div>'});
+  c.innerHTML=h;
+}
+function renderAdmin(){
+  var r=getRequests(),sf=document.getElementById('admin-filter').value,lf=document.getElementById('admin-loc-filter').value;
+  var f=r.filter(x=>(!sf||x.status===sf)&&(!lf||x.location===lf));
+  var c=document.getElementById('admin-list');
+  if(!f.length){c.innerHTML='<p style="text-align:center;color:var(--text3);padding:20px">No requests match.</p>'}else{
+    var h='';f.forEach(x=>{var dot=x.priority==='Urgent'?'🔴':x.priority==='Soon'?'🟡':'🟢';h+='<div style="border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:8px"><div><span style="font-weight:600;color:var(--accent)">'+x.id+'</span> <span style="font-size:12px;color:var(--text3)">'+new Date(x.submitted).toLocaleDateString()+'</span></div><div style="display:flex;gap:6px;align-items:center"><span>'+dot+'</span><select onchange="updateStatus(\''+x.id+'\',this.value)" style="font-size:12px;padding:4px 8px;width:auto;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:4px">'+['Open','In progress','Done'].map(s=>'<option'+(x.status===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div></div><div style="font-size:13px;margin-bottom:4px"><strong>'+x.name+'</strong> · '+x.location+'</div><div style="font-size:13px;color:var(--text2);margin-bottom:4px">'+x.category+(x.equipment?' · '+x.equipment:'')+'</div><div style="font-size:13px;margin-bottom:8px">'+x.issue+'</div>'+(x.access?'<div style="font-size:12px;color:var(--text3)">🕐 '+x.access+'</div>':'')+'<div style="margin-top:8px"><input type="text" placeholder="Add a note..." value="'+(x.notes||'')+'" onchange="updateNote(\''+x.id+'\',this.value)" style="font-size:12px;padding:6px 8px;background:var(--bg3)"></div></div>'});
+    c.innerHTML=h;
+  }
+  var o=r.filter(x=>x.status==='Open').length,ip=r.filter(x=>x.status==='In progress').length,d=r.filter(x=>x.status==='Done').length;
+  document.getElementById('admin-total').textContent=r.length;document.getElementById('admin-open').textContent=o;document.getElementById('admin-ip').textContent=ip;document.getElementById('admin-done').textContent=d;
+}
+function updateStatus(id,s){var r=getRequests();var x=r.find(a=>a.id===id);if(x){x.status=s;saveRequests(r);renderAdmin();updateOpenCount()}}
+function updateNote(id,n){var r=getRequests();var x=r.find(a=>a.id===id);if(x){x.notes=n;saveRequests(r)}}
+function updateOpenCount(){var o=getRequests().filter(r=>r.status==='Open').length;var b=document.getElementById('open-count');if(o>0){b.textContent=o;b.style.display='inline'}else{b.style.display='none'}}
+function exportRequests(){var r=getRequests();var csv='Ticket,Date,Name,Location,Category,Priority,Equipment,Issue,Access,Status,Notes\n';r.forEach(x=>{csv+='"'+x.id+'","'+new Date(x.submitted).toLocaleDateString()+'","'+x.name+'","'+x.location+'","'+x.category+'","'+x.priority+'","'+(x.equipment||'')+'","'+x.issue.replace(/"/g,'""')+'","'+(x.access||'')+'","'+x.status+'","'+(x.notes||'')+'"\n'});var b=new Blob([csv],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='requests-'+new Date().toISOString().split('T')[0]+'.csv';a.click()}
+document.getElementById('admin-filter').addEventListener('change',renderAdmin);
+document.getElementById('admin-loc-filter').addEventListener('change',renderAdmin);
+updateOpenCount();
+</script>
+</body>
+</html>

@@ -3,384 +3,176 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meadows Eye — Vendor Management</title>
+<title>Meadows Eye — Facilities Dashboard</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#ffffff;--bg2:#f7f7f5;--bg3:#eeeee9;--text:#1a1a1a;--text2:#666;--text3:#999;--accent:#2563eb;--accent-bg:#eff6ff;--accent-text:#1e40af;--danger:#dc2626;--danger-bg:#fef2f2;--danger-text:#991b1b;--success:#16a34a;--success-text:#166534;--success-bg:#f0fdf4;--warning-bg:#fffbeb;--warning-text:#92400e;--pro:#7c3aed;--pro-bg:#f5f3ff;--pro-text:#5b21b6;--border:#e5e5e5;--border2:#d4d4d4;--radius:8px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;--mono:"SF Mono",Monaco,Consolas,monospace}
-@media(prefers-color-scheme:dark){:root{--bg:#1a1a1a;--bg2:#252525;--bg3:#333;--text:#e5e5e5;--text2:#aaa;--text3:#777;--accent:#60a5fa;--accent-bg:#1e3a5f;--accent-text:#93c5fd;--danger:#f87171;--danger-bg:#4c1919;--danger-text:#fca5a5;--success:#4ade80;--success-text:#86efac;--success-bg:#14532d;--warning-bg:#451a03;--warning-text:#fcd34d;--pro:#a78bfa;--pro-bg:#2e1065;--pro-text:#c4b5fd;--border:#333;--border2:#444}}
+:root{--bg:#111113;--bg2:#1a1a1f;--bg3:#252530;--text:#e5e5ea;--text2:#a0a0ab;--text3:#65656e;--accent:#60a5fa;--accent-bg:#1e3a5f;--accent-text:#93c5fd;--danger:#f87171;--danger-bg:#4c1919;--danger-text:#fca5a5;--success:#4ade80;--success-bg:#14532d;--success-text:#86efac;--warning:#fbbf24;--warning-bg:#451a03;--warning-text:#fcd34d;--pro:#a78bfa;--pro-bg:#2e1065;--pro-text:#c4b5fd;--border:#2a2a35;--border2:#3a3a45;--radius:12px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
-.app{max-width:1200px;margin:0 auto;padding:16px 20px}
-.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
-.logo h1{font-size:20px;font-weight:600}
-.logo-sub{font-size:13px;color:var(--text2)}
-.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto}
-.tab{padding:10px 16px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--text2);border-bottom:2px solid transparent;white-space:nowrap;font-family:var(--font);transition:color .15s}
-.tab:hover{color:var(--text);background:var(--bg2);border-radius:var(--radius) var(--radius) 0 0}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.tab i{margin-right:5px;font-size:15px;vertical-align:-2px}
-.panel{display:none}.panel.active{display:block}
-.alert{padding:12px 16px;border-radius:var(--radius);margin-bottom:16px;font-size:13px;display:flex;align-items:center;gap:10px}
-.alert-danger{background:var(--danger-bg);color:var(--danger-text);border:1px solid var(--danger-text)}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
-.stat{background:var(--bg2);border-radius:var(--radius);padding:14px 16px}
-.stat-label{font-size:12px;color:var(--text2);margin-bottom:2px}
-.stat-val{font-size:22px;font-weight:600}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{background:var(--bg2);font-weight:500;font-size:12px;color:var(--text2);text-align:left;padding:10px 12px;border-bottom:1px solid var(--border2);position:sticky;top:0;z-index:1}
-td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top}
-tr:hover td{background:var(--bg2)}
-input[type="text"],input[type="date"],select{width:100%;font-size:12px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text);font-family:var(--font)}
-input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-bg)}
-.badge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;display:inline-block;white-space:nowrap}
-.b-equip{background:var(--accent-bg);color:var(--accent-text)}
-.b-surgical{background:var(--pro-bg);color:var(--pro-text)}
-.b-hvac{background:var(--warning-bg);color:var(--warning-text)}
-.b-it{background:var(--success-bg);color:var(--success-text)}
-.b-other{background:var(--bg2);color:var(--text2)}
-.actions{display:flex;gap:8px;margin:16px 0;flex-wrap:wrap}
-.btn{padding:8px 16px;font-size:13px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);cursor:pointer;display:flex;align-items:center;gap:6px;font-family:var(--font);transition:background .1s}
-.btn:hover{background:var(--bg2)}.btn:active{transform:scale(0.98)}
-.btn-accent{background:var(--accent);color:#fff;border-color:var(--accent)}.btn-accent:hover{opacity:.9}
-.btn-danger{color:var(--danger);border-color:var(--danger)}
-.search-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.search-bar input{flex:1;min-width:200px}
-.search-bar select{width:180px;flex-shrink:0}
-.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius)}
-.table-wrap table{margin:0}
-.loc-matrix th.loc-h{writing-mode:vertical-lr;transform:rotate(180deg);text-align:left;padding:12px 4px;font-size:11px;width:36px;min-width:36px}
-.loc-matrix td.chk{text-align:center;cursor:pointer;font-size:16px;width:36px;min-width:36px;user-select:none}
-.loc-matrix td.chk:hover{background:var(--accent-bg)}
-.loc-matrix td.chk.on{color:var(--success)}
-.footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);text-align:center}
-@media(max-width:768px){.app{padding:12px}.stats{grid-template-columns:1fr 1fr}.tab{padding:8px 12px;font-size:12px}}
+/* NAV */
+.top-nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;gap:0;overflow-x:auto;position:sticky;top:0;z-index:50}
+.nav-brand{font-weight:600;font-size:14px;padding:12px 16px 12px 0;border-right:1px solid var(--border);margin-right:4px;white-space:nowrap;color:var(--text)}
+.nav-link{padding:12px 14px;font-size:13px;color:var(--text3);text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s}
+.nav-link:hover{color:var(--text)}
+.nav-link.active{color:var(--accent);border-bottom-color:var(--accent)}
+.nav-link i{margin-right:4px;font-size:15px;vertical-align:-2px}
+/* LAYOUT */
+.dash{max-width:1200px;margin:0 auto;padding:20px}
+.dash-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.dash-header h1{font-size:22px;font-weight:600}
+.dash-header .date{font-size:13px;color:var(--text2)}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden}
+.kpi-label{font-size:12px;color:var(--text2);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.kpi-val{font-size:28px;font-weight:700}
+.kpi-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.kpi-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:32px;opacity:.1}
+.kpi.alert-kpi{border-left:3px solid var(--danger)}
+.kpi.warn-kpi{border-left:3px solid var(--warning)}
+.kpi.good-kpi{border-left:3px solid var(--success)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:800px){.grid-2{grid-template-columns:1fr}.kpi-row{grid-template-columns:1fr 1fr}}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.card-head h2{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.card-head a{font-size:12px;color:var(--accent);text-decoration:none}
+.card-head a:hover{text-decoration:underline}
+.list-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.list-item:last-child{border-bottom:none}
+.list-item .label{display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-red{background:var(--danger)}.dot-yellow{background:var(--warning)}.dot-green{background:var(--success)}.dot-blue{background:var(--accent)}
+.badge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;display:inline-block}
+.b-danger{background:var(--danger-bg);color:var(--danger-text)}
+.b-warning{background:var(--warning-bg);color:var(--warning-text)}
+.b-success{background:var(--success-bg);color:var(--success-text)}
+.b-accent{background:var(--accent-bg);color:var(--accent-text)}
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.tool-card{border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-decoration:none;color:var(--text);transition:all .15s;cursor:pointer;display:block}
+.tool-card:hover{border-color:var(--accent);background:var(--accent-bg);transform:translateY(-1px)}
+.tool-card h3{font-size:14px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.tool-card p{font-size:12px;color:var(--text2)}
+.tool-card .tool-icon{font-size:20px;color:var(--accent);margin-bottom:8px}
+.loc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.loc-card{border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px}
+.loc-name{font-weight:600;margin-bottom:4px}
+.loc-stat{color:var(--text2)}
+.checklist-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;cursor:pointer}
+.checklist-item:last-child{border-bottom:none}
+.checklist-item input{width:16px;height:16px;accent-color:var(--accent)}
+.checklist-item.done{color:var(--text3);text-decoration:line-through}
+.empty-state{text-align:center;padding:20px;color:var(--text3);font-size:13px}
 </style>
 </head>
 <body>
-<div class="app">
 
-<div class="header">
-  <div class="logo">
-    <div>
-      <h1>Meadows Eye</h1>
-      <div class="logo-sub">Vendor management — Facilities team</div>
-    </div>
+<nav class="top-nav">
+  <div class="nav-brand">Meadows Eye</div>
+  <a class="nav-link active" href="index.html"><i class="ti ti-layout-dashboard"></i>Dashboard</a>
+  <a class="nav-link" href="requests.html"><i class="ti ti-inbox"></i>Requests</a>
+  <a class="nav-link" href="pm.html"><i class="ti ti-calendar-check"></i>PM Calendar</a>
+  <a class="nav-link" href="vendors.html"><i class="ti ti-address-book"></i>Vendors</a>
+</nav>
+
+<div class="dash">
+<div class="dash-header">
+  <div>
+    <h1><i class="ti ti-layout-dashboard" style="vertical-align:-3px;margin-right:4px"></i> Facilities Dashboard</h1>
+    <div class="date"><span id="today-date"></span></div>
   </div>
-  <div style="font-size:12px;color:var(--text3)">Data saved locally in this browser</div>
+  <div style="font-size:12px;color:var(--text3)"><i class="ti ti-refresh" style="cursor:pointer;font-size:16px;vertical-align:-2px" onclick="loadDashboard()" title="Refresh"></i></div>
 </div>
 
-<div class="tabs" id="tabs">
-  <button class="tab active" data-t="emergency"><i class="ti ti-alert-triangle"></i>Emergency</button>
-  <button class="tab" data-t="directory"><i class="ti ti-address-book"></i>Directory</button>
-  <button class="tab" data-t="locations"><i class="ti ti-map-pin"></i>Locations</button>
-  <button class="tab" data-t="log"><i class="ti ti-clipboard-list"></i>Service log</button>
-  <button class="tab" data-t="contracts"><i class="ti ti-file-text"></i>Contracts</button>
+<div class="kpi-row">
+  <div class="kpi alert-kpi" id="kpi-requests"><div class="kpi-label"><i class="ti ti-inbox" style="font-size:14px"></i> Open requests</div><div class="kpi-val" id="k-requests">—</div><div class="kpi-sub" id="k-requests-sub"></div><div class="kpi-icon"><i class="ti ti-inbox"></i></div></div>
+  <div class="kpi warn-kpi" id="kpi-pm"><div class="kpi-label"><i class="ti ti-calendar-check" style="font-size:14px"></i> PM overdue</div><div class="kpi-val" id="k-pm">—</div><div class="kpi-sub" id="k-pm-sub"></div><div class="kpi-icon"><i class="ti ti-calendar-check"></i></div></div>
+  <div class="kpi good-kpi"><div class="kpi-label"><i class="ti ti-check" style="font-size:14px"></i> PM done this month</div><div class="kpi-val" id="k-done">—</div><div class="kpi-sub" id="k-done-sub"></div><div class="kpi-icon"><i class="ti ti-check"></i></div></div>
+  <div class="kpi"><div class="kpi-label"><i class="ti ti-building" style="font-size:14px"></i> Locations</div><div class="kpi-val">10</div><div class="kpi-sub">Active sites</div><div class="kpi-icon"><i class="ti ti-building"></i></div></div>
+  <div class="kpi"><div class="kpi-label"><i class="ti ti-file-text" style="font-size:14px"></i> Contracts</div><div class="kpi-val" id="k-contracts">—</div><div class="kpi-sub" id="k-contracts-sub"></div><div class="kpi-icon"><i class="ti ti-file-text"></i></div></div>
 </div>
 
-<!-- EMERGENCY -->
-<div class="panel active" id="p-emergency">
-  <div class="alert alert-danger"><i class="ti ti-alert-triangle" style="font-size:20px"></i><strong>Quick reference — print this for every location</strong></div>
-  <div class="stats">
-    <div class="stat"><div class="stat-label">Total vendors</div><div class="stat-val" id="s-total">0</div></div>
-    <div class="stat"><div class="stat-label">With emergency #</div><div class="stat-val" id="s-filled">0</div></div>
-    <div class="stat"><div class="stat-label">Missing info</div><div class="stat-val" id="s-missing" style="color:var(--danger)">0</div></div>
-  </div>
-  <div class="table-wrap"><table id="em-tbl">
-    <thead><tr><th style="width:155px">Category</th><th style="width:145px">Vendor</th><th style="width:130px">Emergency phone</th><th style="width:130px">After-hours</th><th style="width:100px">Response SLA</th><th style="width:170px">Locations covered</th><th style="width:130px">Account # / notes</th><th style="width:40px"></th></tr></thead>
-    <tbody id="em-body"></tbody>
-  </table></div>
-  <div class="actions">
-    <button class="btn btn-accent" onclick="addEmRow()"><i class="ti ti-plus"></i>Add row</button>
-    <button class="btn" onclick="exportCSV('emergency')"><i class="ti ti-download"></i>Export CSV</button>
-  </div>
+<div class="grid-2">
+  <div class="card"><div class="card-head"><h2><i class="ti ti-inbox" style="font-size:16px;color:var(--danger)"></i> Open requests</h2><a href="requests.html">View all →</a></div><div id="dash-requests"><div class="empty-state">No open requests</div></div></div>
+  <div class="card"><div class="card-head"><h2><i class="ti ti-alert-triangle" style="font-size:16px;color:var(--warning)"></i> PM alerts</h2><a href="pm.html">Full calendar →</a></div><div id="dash-pm"><div class="empty-state">No PM data yet</div></div></div>
 </div>
 
-<!-- DIRECTORY -->
-<div class="panel" id="p-directory">
-  <div class="search-bar">
-    <input type="text" id="d-search" placeholder="Search vendors...">
-    <select id="d-filter"><option value="">All categories</option></select>
-  </div>
-  <div class="table-wrap"><table id="dir-tbl">
-    <thead><tr><th style="width:135px">Vendor</th><th style="width:120px">Category</th><th style="width:160px">Service focus</th><th style="width:110px">Contact</th><th style="width:120px">Phone</th><th style="width:150px">Email</th><th style="width:80px">Website</th><th style="width:95px">Status</th><th style="width:90px">Annual cost</th><th style="width:40px"></th></tr></thead>
-    <tbody id="dir-body"></tbody>
-  </table></div>
-  <div class="actions">
-    <button class="btn btn-accent" onclick="addDirRow()"><i class="ti ti-plus"></i>Add vendor</button>
-    <button class="btn" onclick="exportCSV('directory')"><i class="ti ti-download"></i>Export CSV</button>
+<div class="card"><div class="card-head"><h2><i class="ti ti-list-check" style="font-size:16px;color:var(--accent)"></i> Monday morning checklist</h2><span style="font-size:12px;color:var(--text3)">Resets each Monday</span></div><div id="checklist"></div></div>
+
+<div class="card"><div class="card-head"><h2><i class="ti ti-map-pin" style="font-size:16px;color:var(--pro)"></i> Locations at a glance</h2></div><div class="loc-grid" id="loc-overview"></div></div>
+
+<div class="card">
+  <div class="card-head"><h2><i class="ti ti-tools" style="font-size:16px;color:var(--accent)"></i> Your tools</h2></div>
+  <div class="tool-grid">
+    <a class="tool-card" href="requests.html"><div class="tool-icon"><i class="ti ti-inbox"></i></div><h3>Request form</h3><p>Clinic staff submit maintenance requests</p></a>
+    <a class="tool-card" href="pm.html"><div class="tool-icon"><i class="ti ti-calendar-check"></i></div><h3>PM calendar</h3><p>Preventive maintenance schedule & log</p></a>
+    <a class="tool-card" href="vendors.html"><div class="tool-icon"><i class="ti ti-address-book"></i></div><h3>Vendor tracker</h3><p>Emergency contacts, directory, contracts</p></a>
   </div>
 </div>
 
-<!-- LOCATIONS -->
-<div class="panel" id="p-locations">
-  <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Click cells to toggle coverage — shows which vendor services which location at a glance.</p>
-  <div class="table-wrap"><table class="loc-matrix" id="loc-tbl">
-    <thead><tr><th style="width:140px">Vendor</th><th style="width:100px">Category</th><th class="loc-h">Henderson</th><th class="loc-h">Camino</th><th class="loc-h">Edna</th><th class="loc-h">East</th><th class="loc-h">Southwest</th><th class="loc-h">Pahrump</th><th class="loc-h">Centennial</th><th class="loc-h">Smoke Ranch</th><th class="loc-h">Admin 1090</th><th class="loc-h">Surgery Ctr</th></tr></thead>
-    <tbody id="loc-body"></tbody>
-  </table></div>
-  <div class="actions">
-    <button class="btn" onclick="exportCSV('locations')"><i class="ti ti-download"></i>Export CSV</button>
-  </div>
-  <div style="font-size:12px;color:var(--text3);margin-top:4px"><i class="ti ti-check" style="color:var(--success)"></i> = vendor covers this location</div>
-</div>
-
-<!-- SERVICE LOG -->
-<div class="panel" id="p-log">
-  <div class="stats">
-    <div class="stat"><div class="stat-label">Total calls</div><div class="stat-val" id="l-total">0</div></div>
-    <div class="stat"><div class="stat-label">Emergency</div><div class="stat-val" id="l-emerg" style="color:var(--danger)">0</div></div>
-    <div class="stat"><div class="stat-label">Total cost</div><div class="stat-val" id="l-cost">$0</div></div>
-  </div>
-  <div class="table-wrap"><table id="log-tbl">
-    <thead><tr><th style="width:100px">Date</th><th style="width:130px">Vendor</th><th style="width:110px">Location</th><th style="width:100px">Type</th><th style="width:140px">Equipment</th><th style="width:170px">Issue</th><th style="width:150px">Resolution</th><th style="width:80px">Cost</th><th style="width:80px">Logged by</th><th style="width:40px"></th></tr></thead>
-    <tbody id="log-body"></tbody>
-  </table></div>
-  <div class="actions">
-    <button class="btn btn-accent" onclick="addLogRow()"><i class="ti ti-plus"></i>Log service call</button>
-    <button class="btn" onclick="exportCSV('log')"><i class="ti ti-download"></i>Export CSV</button>
-  </div>
-</div>
-
-<!-- CONTRACTS -->
-<div class="panel" id="p-contracts">
-  <div class="table-wrap"><table id="con-tbl">
-    <thead><tr><th style="width:140px">Vendor</th><th style="width:170px">Service covered</th><th style="width:110px">Start date</th><th style="width:110px">End date</th><th style="width:90px">Auto-renew</th><th style="width:100px">Annual cost</th><th style="width:100px">Notice period</th><th style="width:110px">Status</th><th style="width:40px"></th></tr></thead>
-    <tbody id="con-body"></tbody>
-  </table></div>
-  <div class="actions">
-    <button class="btn btn-accent" onclick="addConRow()"><i class="ti ti-plus"></i>Add contract</button>
-    <button class="btn" onclick="exportCSV('contracts')"><i class="ti ti-download"></i>Export CSV</button>
-  </div>
-</div>
-
-<div class="footer">Meadows Eye Facilities · Vendor Management v1.0 · Data stored in browser localStorage</div>
+<div style="text-align:center;font-size:12px;color:var(--text3);margin-top:8px;padding-bottom:20px">Meadows Eye Facilities v1.0</div>
 </div>
 
 <script>
-const LOCS=["Henderson","Camino","Edna","East","Southwest","Pahrump","Centennial","Smoke Ranch","Admin 1090","Surgery Center"];
-const LOG_TYPES=["","Emergency","Scheduled PM","Repair","Installation","Inspection","Warranty"];
-const STATUSES=["","Active","Renewal pending","Expired","Month-to-month","No contract"];
-const CON_STATUSES=["","Active","Renewal due <60 days","Expired","Month-to-month","Pending signature"];
+var LOCS=["Henderson","Camino","Edna","East","Southwest","Pahrump","Centennial","Smoke Ranch","Admin 1090","Surgery Center"];
+var FREQ_DAYS={Weekly:7,Monthly:30,Quarterly:90,Annually:365};
+var now=new Date();
+document.getElementById('today-date').textContent=now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
-const DEFAULTS=[
-  {cat:"Ophthalmic equipment",cls:"b-equip",vendors:[
-    {n:"Zeiss",f:"OCT, visual fields, IOLMaster, microscopes",p:"1-800-342-9821"},
-    {n:"Topcon",f:"Retinal cameras, autorefractors, slit lamps",p:"1-800-223-1130"},
-    {n:"Haag-Streit",f:"Slit lamps, tonometry, perimetry",p:"1-800-627-6286"},
-    {n:"Heidelberg Engineering",f:"Spectralis OCT, retinal imaging",p:"1-800-931-2230"},
-    {n:"Reichert",f:"Tonometers, lensometers",p:"1-888-849-8955"},
-    {n:"Lombart / Marco",f:"Phoropters, refraction, chairs & stands",p:"1-800-446-8092"}]},
-  {cat:"Surgical equipment",cls:"b-surgical",vendors:[
-    {n:"Alcon",f:"Phaco systems, IOLs, surgical packs",p:"1-800-862-5266"},
-    {n:"Johnson & Johnson Vision",f:"IOLs, viscoelastics",p:"1-800-874-5278"}]},
-  {cat:"Sterilization",cls:"b-other",vendors:[{n:"",f:"Autoclaves, sterilizers",p:""}]},
-  {cat:"HVAC",cls:"b-hvac",vendors:[{n:"",f:"Heating, cooling, humidity",p:""}]},
-  {cat:"Electrical",cls:"b-hvac",vendors:[{n:"",f:"Power, generator, UPS",p:""}]},
-  {cat:"Plumbing",cls:"b-other",vendors:[{n:"",f:"",p:""}]},
-  {cat:"IT / Network",cls:"b-it",vendors:[{n:"",f:"EHR, network, printers",p:""}]},
-  {cat:"Telecom",cls:"b-it",vendors:[{n:"",f:"Phone systems, VoIP",p:""}]},
-  {cat:"Security / Alarm",cls:"b-other",vendors:[{n:"",f:"Alarm, cameras, access",p:""}]},
-  {cat:"Fire protection",cls:"b-other",vendors:[{n:"",f:"Sprinklers, extinguishers",p:""}]},
-  {cat:"Janitorial",cls:"b-other",vendors:[{n:"",f:"Cleaning, supplies",p:""}]},
-  {cat:"Pest control",cls:"b-other",vendors:[{n:"",f:"",p:""}]},
-  {cat:"General contractor",cls:"b-other",vendors:[{n:"",f:"Buildouts, drywall",p:""}]},
-  {cat:"Medical waste",cls:"b-other",vendors:[{n:"",f:"Sharps, biohazard",p:""}]},
-  {cat:"Doors / Locks",cls:"b-other",vendors:[{n:"",f:"Locksmith, badges",p:""}]},
-  {cat:"Signage",cls:"b-other",vendors:[{n:"",f:"Interior/exterior",p:""}]},
-  {cat:"Elevator",cls:"b-other",vendors:[{n:"",f:"Maintenance, inspection",p:""}]},
-  {cat:"Landscaping",cls:"b-other",vendors:[{n:"",f:"Grounds",p:""}]}
-];
+function loadDashboard(){loadRequests();loadPM();loadChecklist();loadLocations();loadContracts()}
 
-// Helpers
-const inp=(v,ph)=>'<input type="text" value="'+(v||'')+'" placeholder="'+(ph||'')+'">';
-const sel=(opts,v)=>'<select>'+opts.map(o=>'<option'+(o===v?' selected':'')+'>'+o+'</option>').join('')+'</select>';
-const badge=(cat,cls)=>'<span class="badge '+(cls||'b-other')+'">'+cat+'</span>';
-const delBtn='<td style="text-align:center"><button class="btn" style="padding:4px 6px;border:none" onclick="this.closest(\'tr\').remove();saveAll()" title="Delete"><i class="ti ti-trash" style="font-size:14px;color:var(--danger)"></i></button></td>';
-const today=()=>new Date().toISOString().split('T')[0];
-
-// Tabs
-document.querySelectorAll('.tab').forEach(t=>{
-  t.addEventListener('click',()=>{
-    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    t.classList.add('active');
-    document.getElementById('p-'+t.dataset.t).classList.add('active');
-  });
-});
-
-// ── Emergency ──
-function buildEm(data){
-  var h='';
-  (data||DEFAULTS).forEach(cat=>{
-    var vendors=cat.vendors||[cat];
-    vendors.forEach(v=>{
-      h+='<tr><td>'+badge(v.cat||cat.cat,v.cls||cat.cls)+'</td><td>'+inp(v.n||v.vendor,'Vendor')+'</td><td>'+inp(v.ep||v.p||'','(xxx) xxx-xxxx')+'</td><td>'+inp(v.ah||'','After hours')+'</td><td>'+inp(v.sla||'','e.g. 4 hrs')+'</td><td>'+inp(v.locs||'','Locations')+'</td><td>'+inp(v.notes||'','Account #')+'</td>'+delBtn+'</tr>';
-    });
-  });
-  document.getElementById('em-body').innerHTML=h;
-  document.getElementById('em-body').addEventListener('input',function(){updateEmStats();saveAll()});
-  updateEmStats();
-}
-function addEmRow(){
-  var tr=document.createElement('tr');
-  tr.innerHTML='<td>'+inp('','Category')+'</td><td>'+inp('','Vendor')+'</td><td>'+inp('','Phone')+'</td><td>'+inp('','After hrs')+'</td><td>'+inp('','SLA')+'</td><td>'+inp('','Locations')+'</td><td>'+inp('','Notes')+'</td>'+delBtn;
-  document.getElementById('em-body').appendChild(tr);
-  tr.querySelector('input').focus();
-}
-function updateEmStats(){
-  var t=0,f=0;
-  document.querySelectorAll('#em-body tr').forEach(r=>{
-    var i=r.querySelectorAll('input');
-    if(i[0]&&i[0].value){t++;if(i[1]&&i[1].value)f++}
-  });
-  document.getElementById('s-total').textContent=t;
-  document.getElementById('s-filled').textContent=f;
-  document.getElementById('s-missing').textContent=Math.max(0,t-f);
+function loadRequests(){
+  var r=[];try{r=JSON.parse(localStorage.getItem('me_requests'))||[]}catch(e){}
+  var open=r.filter(x=>x.status==='Open'),ip=r.filter(x=>x.status==='In progress'),urgent=open.filter(x=>x.priority==='Urgent');
+  document.getElementById('k-requests').textContent=open.length+ip.length;
+  document.getElementById('k-requests-sub').textContent=urgent.length>0?urgent.length+' urgent':'None urgent';
+  document.getElementById('kpi-requests').className='kpi '+(urgent.length>0?'alert-kpi':open.length>0?'warn-kpi':'good-kpi');
+  var c=document.getElementById('dash-requests'),show=open.concat(ip).slice(0,6);
+  if(!show.length){c.innerHTML='<div class="empty-state">All clear — no open requests</div>';return}
+  var h='';show.forEach(x=>{var dot=x.priority==='Urgent'?'dot-red':x.priority==='Soon'?'dot-yellow':'dot-green';h+='<div class="list-item"><div class="label"><span class="dot '+dot+'"></span><div><strong>'+x.id+'</strong> '+x.location+'<div style="font-size:11px;color:var(--text3)">'+x.issue.substring(0,60)+'</div></div></div><span class="badge '+(x.status==='Open'?'b-warning':'b-accent')+'">'+x.status+'</span></div>'});
+  c.innerHTML=h;
 }
 
-// ── Directory ──
-function buildDir(data){
-  var h='';var cats=new Set();
-  var rows=data||[];
-  if(!data){DEFAULTS.forEach(c=>{c.vendors.forEach(v=>{rows.push({n:v.n,cat:c.cat,cls:c.cls,f:v.f,p:v.p,contact:'',email:'',web:'',status:'',cost:''})})});}
-  rows.forEach(v=>{
-    cats.add(v.cat);
-    h+='<tr data-cat="'+v.cat+'"><td>'+inp(v.n,'Name')+'</td><td>'+badge(v.cat,v.cls)+'</td><td>'+inp(v.f,'Focus')+'</td><td>'+inp(v.contact,'Name')+'</td><td>'+inp(v.p,'Phone')+'</td><td>'+inp(v.email,'email')+'</td><td>'+inp(v.web,'URL')+'</td><td>'+sel(STATUSES,v.status)+'</td><td>'+inp(v.cost,'$0')+'</td>'+delBtn+'</tr>';
-  });
-  document.getElementById('dir-body').innerHTML=h;
-  var filt=document.getElementById('d-filter');
-  filt.innerHTML='<option value="">All categories</option>';
-  Array.from(cats).sort().forEach(c=>{filt.innerHTML+='<option>'+c+'</option>'});
-  filt.onchange=filterDir;
-  document.getElementById('d-search').oninput=filterDir;
-  document.getElementById('dir-body').addEventListener('input',function(){saveAll()});
-}
-function filterDir(){
-  var s=document.getElementById('d-search').value.toLowerCase();
-  var c=document.getElementById('d-filter').value;
-  document.querySelectorAll('#dir-body tr').forEach(r=>{
-    r.style.display=(r.textContent.toLowerCase().indexOf(s)>-1&&(!c||r.dataset.cat===c))?'':'none';
-  });
-}
-function addDirRow(){
-  var tr=document.createElement('tr');tr.dataset.cat='';
-  tr.innerHTML='<td>'+inp('','Name')+'</td><td>'+inp('','Category')+'</td><td>'+inp('','Focus')+'</td><td>'+inp('','Contact')+'</td><td>'+inp('','Phone')+'</td><td>'+inp('','Email')+'</td><td>'+inp('','URL')+'</td><td>'+sel(STATUSES,'')+'</td><td>'+inp('','$0')+'</td>'+delBtn;
-  document.getElementById('dir-body').appendChild(tr);tr.querySelector('input').focus();
+function loadPM(){
+  var t=[];try{t=JSON.parse(localStorage.getItem('me_pm_tasks'))||[]}catch(e){}
+  var log=[];try{log=JSON.parse(localStorage.getItem('me_pm_log'))||[]}catch(e){}
+  var overdue=[],dueSoon=[];
+  t.forEach(x=>{if(!x.last){overdue.push(x);return}var n=new Date(x.last+'T00:00:00');n.setDate(n.getDate()+(FREQ_DAYS[x.freq]||30));var today=new Date();today.setHours(0,0,0,0);var d=Math.ceil((n-today)/(864e5));if(d<0)overdue.push(x);else if(d<=7)dueSoon.push(x)});
+  document.getElementById('k-pm').textContent=overdue.length;
+  document.getElementById('k-pm-sub').textContent=dueSoon.length+' due this week';
+  document.getElementById('kpi-pm').className='kpi '+(overdue.length>0?'alert-kpi':dueSoon.length>0?'warn-kpi':'good-kpi');
+  var ms=new Date(now.getFullYear(),now.getMonth(),1);var dm=log.filter(l=>new Date(l.date)>=ms).length;
+  document.getElementById('k-done').textContent=dm;
+  document.getElementById('k-done-sub').textContent='of '+t.length+' total tasks';
+  var c=document.getElementById('dash-pm'),alerts=overdue.concat(dueSoon).slice(0,6);
+  if(!alerts.length&&t.length){c.innerHTML='<div class="empty-state" style="color:var(--success)"><i class="ti ti-check" style="font-size:20px"></i><br>All PM tasks on track</div>';return}
+  if(!t.length){c.innerHTML='<div class="empty-state">Open PM calendar to set up schedule</div>';return}
+  var h='';alerts.forEach(x=>{var o=overdue.includes(x);h+='<div class="list-item"><div class="label"><span class="dot '+(o?'dot-red':'dot-yellow')+'"></span><div>'+x.task+'<div style="font-size:11px;color:var(--text3)">'+x.loc+' · '+x.freq+'</div></div></div><span class="badge '+(o?'b-danger':'b-warning')+'">'+(o?'Overdue':'Due soon')+'</span></div>'});
+  c.innerHTML=h;
 }
 
-// ── Locations ──
-function buildLoc(data){
-  var h='';
-  var rows=data||[];
-  if(!data){DEFAULTS.forEach(c=>{c.vendors.forEach(v=>{rows.push({n:v.n||'('+c.cat+')',cat:c.cat,cls:c.cls,checks:new Array(10).fill(false)})})});}
-  rows.forEach(function(v,ri){
-    var cells='<td style="font-weight:500">'+v.n+'</td><td>'+badge(v.cat,v.cls)+'</td>';
-    LOCS.forEach(function(l,li){cells+='<td class="chk'+(v.checks[li]?' on':'')+'" data-r="'+ri+'" data-l="'+li+'">'+(v.checks[li]?'<i class="ti ti-check"></i>':'')+'</td>'});
-    h+='<tr>'+cells+'</tr>';
-  });
-  document.getElementById('loc-body').innerHTML=h;
-  document.querySelectorAll('.chk').forEach(c=>{
-    c.addEventListener('click',function(){
-      var on=c.classList.toggle('on');
-      c.innerHTML=on?'<i class="ti ti-check"></i>':'';
-      saveAll();
-    });
-  });
+function loadChecklist(){
+  var items=["Review open facility requests from last week","Check PM calendar — anything overdue?","30-min team huddle — assign this week's priorities","Walk through highest-traffic location for issues","Check vendor contract renewals (next 60 days)","Review last week's service call costs","Confirm scheduled vendor visits for this week","Update equipment status for any ongoing repairs"];
+  var wk='checklist-'+getMonday(now);var ck={};try{ck=JSON.parse(localStorage.getItem(wk))||{}}catch(e){}
+  var h='';items.forEach(function(item,i){var done=ck[i]||false;h+='<div class="checklist-item'+(done?' done':'')+'" onclick="toggleCheck('+i+',this)"><input type="checkbox" '+(done?'checked':'')+' onclick="event.stopPropagation()"><span>'+item+'</span></div>'});
+  document.getElementById('checklist').innerHTML=h;
+}
+function getMonday(d){var day=d.getDay();var diff=d.getDate()-day+(day===0?-6:1);var m=new Date(d);m.setDate(diff);return m.toISOString().split('T')[0]}
+function toggleCheck(i,el){var wk='checklist-'+getMonday(now);var ck={};try{ck=JSON.parse(localStorage.getItem(wk))||{}}catch(e){}ck[i]=!ck[i];localStorage.setItem(wk,JSON.stringify(ck));el.classList.toggle('done');el.querySelector('input').checked=ck[i]}
+
+function loadLocations(){
+  var r=[];try{r=JSON.parse(localStorage.getItem('me_requests'))||[]}catch(e){}
+  var h='';LOCS.forEach(loc=>{var lr=r.filter(x=>x.location===loc&&x.status!=='Done');var u=lr.filter(x=>x.priority==='Urgent').length;var bc=u>0?'var(--danger)':lr.length>0?'var(--warning)':'var(--border)';h+='<div class="loc-card" style="border-color:'+bc+'"><div class="loc-name">'+loc+'</div>'+(lr.length>0?'<div class="loc-stat">'+(u>0?'<span style="color:var(--danger)">'+u+' urgent</span> · ':'')+lr.length+' open</div>':'<div class="loc-stat" style="color:var(--success)">All clear</div>')+'</div>'});
+  document.getElementById('loc-overview').innerHTML=h;
 }
 
-// ── Service Log ──
-function buildLog(data){
-  var h='';
-  (data||[]).forEach(v=>{
-    h+='<tr><td><input type="date" value="'+(v.date||'')+'"></td><td>'+inp(v.vendor,'Vendor')+'</td><td>'+sel([''].concat(LOCS),v.loc)+'</td><td>'+sel(LOG_TYPES,v.type)+'</td><td>'+inp(v.equip,'Equipment')+'</td><td>'+inp(v.issue,'Issue')+'</td><td>'+inp(v.res,'Resolution')+'</td><td>'+inp(v.cost,'$0')+'</td><td>'+inp(v.by,'Initials')+'</td>'+delBtn+'</tr>';
-  });
-  document.getElementById('log-body').innerHTML=h;
-  document.getElementById('log-body').addEventListener('input',function(){updateLogStats();saveAll()});
-  document.getElementById('log-body').addEventListener('change',function(){updateLogStats();saveAll()});
-  updateLogStats();
-}
-function addLogRow(){
-  var tr=document.createElement('tr');
-  tr.innerHTML='<td><input type="date" value="'+today()+'"></td><td>'+inp('','Vendor')+'</td><td>'+sel([''].concat(LOCS),'')+'</td><td>'+sel(LOG_TYPES,'')+'</td><td>'+inp('','Equipment')+'</td><td>'+inp('','Issue')+'</td><td>'+inp('','Resolution')+'</td><td>'+inp('','$0')+'</td><td>'+inp('','Initials')+'</td>'+delBtn;
-  document.getElementById('log-body').appendChild(tr);tr.querySelector('input').focus();saveAll();
-  updateLogStats();
-}
-function updateLogStats(){
-  var rows=document.querySelectorAll('#log-body tr');
-  var em=0,cost=0;
-  rows.forEach(r=>{
-    var s=r.querySelectorAll('select');
-    if(s[1]&&s[1].value==='Emergency')em++;
-    var c=r.querySelectorAll('input');
-    var v=parseFloat((c[5]?c[5].value:'').replace(/[^0-9.]/g,''));
-    if(!isNaN(v))cost+=v;
-  });
-  document.getElementById('l-total').textContent=rows.length;
-  document.getElementById('l-emerg').textContent=em;
-  document.getElementById('l-cost').textContent='$'+Math.round(cost).toLocaleString();
+function loadContracts(){
+  var v={};try{v=JSON.parse(localStorage.getItem('me_vendors'))||{}}catch(e){}var c=v.con||[];var exp=0;
+  c.forEach(x=>{if(x.end){var e=new Date(x.end+'T00:00:00');var d=Math.ceil((e-now)/864e5);if(d<=60&&d>0)exp++}});
+  document.getElementById('k-contracts').textContent=c.length||'—';
+  document.getElementById('k-contracts-sub').textContent=exp>0?exp+' renewing soon':'All current';
 }
 
-// ── Contracts ──
-function buildCon(data){
-  var h='';
-  (data||[]).forEach(v=>{
-    h+='<tr><td>'+inp(v.vendor,'Vendor')+'</td><td>'+inp(v.service,'Covered')+'</td><td><input type="date" value="'+(v.start||'')+'"></td><td><input type="date" value="'+(v.end||'')+'"></td><td>'+sel(['','Yes','No'],v.renew)+'</td><td>'+inp(v.cost,'$0')+'</td><td>'+inp(v.notice,'30 days')+'</td><td>'+sel(CON_STATUSES,v.status)+'</td>'+delBtn+'</tr>';
-  });
-  document.getElementById('con-body').innerHTML=h;
-  document.getElementById('con-body').addEventListener('input',function(){saveAll()});
-  document.getElementById('con-body').addEventListener('change',function(){saveAll()});
-}
-function addConRow(){
-  var tr=document.createElement('tr');
-  tr.innerHTML='<td>'+inp('','Vendor')+'</td><td>'+inp('','Covered')+'</td><td><input type="date"></td><td><input type="date"></td><td>'+sel(['','Yes','No'],'')+'</td><td>'+inp('','$0')+'</td><td>'+inp('','30 days')+'</td><td>'+sel(CON_STATUSES,'')+'</td>'+delBtn;
-  document.getElementById('con-body').appendChild(tr);tr.querySelector('input').focus();saveAll();
-}
-
-// ── Save / Load ──
-function saveAll(){
-  try{
-    var em=[];document.querySelectorAll('#em-body tr').forEach(r=>{var i=r.querySelectorAll('input');var b=r.querySelector('.badge');em.push({cat:b?b.textContent:i[0].value,vendor:i[0].value,ep:i[1].value,ah:i[2].value,sla:i[3].value,locs:i[4].value,notes:i[5].value})});
-    var dir=[];document.querySelectorAll('#dir-body tr').forEach(r=>{var i=r.querySelectorAll('input');var s=r.querySelectorAll('select');var b=r.querySelector('.badge');dir.push({n:i[0].value,cat:b?b.textContent:'',f:i[1].value,contact:i[2].value,p:i[3].value,email:i[4].value,web:i[5].value,status:s[0].value,cost:i[6].value})});
-    var loc=[];document.querySelectorAll('#loc-body tr').forEach(r=>{var tds=r.querySelectorAll('td');var b=r.querySelector('.badge');loc.push({n:tds[0].textContent,cat:b?b.textContent:'',checks:Array.from(r.querySelectorAll('.chk')).map(c=>c.classList.contains('on'))})});
-    var log=[];document.querySelectorAll('#log-body tr').forEach(r=>{var i=r.querySelectorAll('input');var s=r.querySelectorAll('select');log.push({date:i[0].value,vendor:i[1].value,loc:s[0].value,type:s[1].value,equip:i[2].value,issue:i[3].value,res:i[4].value,cost:i[5].value,by:i[6].value})});
-    var con=[];document.querySelectorAll('#con-body tr').forEach(r=>{var i=r.querySelectorAll('input');var s=r.querySelectorAll('select');con.push({vendor:i[0].value,service:i[1].value,start:i[2].value,end:i[3].value,renew:s[0].value,cost:i[4].value,notice:i[5].value,status:s[1].value})});
-    localStorage.setItem('me_vendors',JSON.stringify({em:em,dir:dir,loc:loc,log:log,con:con,v:1}));
-  }catch(e){}
-}
-
-function loadAll(){
-  try{
-    var d=JSON.parse(localStorage.getItem('me_vendors'));
-    if(d&&d.v){buildEm(d.em.map(v=>{return{vendors:[v],cat:v.cat,cls:'b-other'}}));buildDir(d.dir);buildLoc(d.loc);buildLog(d.log);buildCon(d.con);return}
-  }catch(e){}
-  buildEm();buildDir();buildLoc();buildLog([]);buildCon([]);
-}
-
-// ── CSV Export ──
-function exportCSV(tab){
-  var csv='',rows;
-  if(tab==='emergency'){
-    csv='Category,Vendor,Emergency Phone,After Hours,SLA,Locations,Notes\n';
-    document.querySelectorAll('#em-body tr').forEach(r=>{var i=r.querySelectorAll('input');var b=r.querySelector('.badge');csv+='"'+(b?b.textContent:i[0].value)+'","'+i[0].value+'","'+i[1].value+'","'+i[2].value+'","'+i[3].value+'","'+i[4].value+'","'+i[5].value+'"\n'});
-  }else if(tab==='directory'){
-    csv='Vendor,Category,Focus,Contact,Phone,Email,Website,Status,Cost\n';
-    document.querySelectorAll('#dir-body tr').forEach(r=>{var i=r.querySelectorAll('input');var s=r.querySelectorAll('select');var b=r.querySelector('.badge');csv+='"'+i[0].value+'","'+(b?b.textContent:'')+'","'+i[1].value+'","'+i[2].value+'","'+i[3].value+'","'+i[4].value+'","'+i[5].value+'","'+s[0].value+'","'+i[6].value+'"\n'});
-  }else if(tab==='locations'){
-    csv='Vendor,Category,'+LOCS.join(',')+'\n';
-    document.querySelectorAll('#loc-body tr').forEach(r=>{var tds=r.querySelectorAll('td');var b=r.querySelector('.badge');csv+='"'+tds[0].textContent+'","'+(b?b.textContent:'')+'",'+Array.from(r.querySelectorAll('.chk')).map(c=>c.classList.contains('on')?'Yes':'').join(',')+'\n'});
-  }else if(tab==='log'){
-    csv='Date,Vendor,Location,Type,Equipment,Issue,Resolution,Cost,Logged By\n';
-    document.querySelectorAll('#log-body tr').forEach(r=>{var i=r.querySelectorAll('input');var s=r.querySelectorAll('select');csv+='"'+i[0].value+'","'+i[1].value+'","'+s[0].value+'","'+s[1].value+'","'+i[2].value+'","'+i[3].value+'","'+i[4].value+'","'+i[5].value+'","'+i[6].value+'"\n'});
-  }else if(tab==='contracts'){
-    csv='Vendor,Service,Start,End,Auto-Renew,Cost,Notice,Status\n';
-    document.querySelectorAll('#con-body tr').forEach(r=>{var i=r.querySelectorAll('input');var s=r.querySelectorAll('select');csv+='"'+i[0].value+'","'+i[1].value+'","'+i[2].value+'","'+i[3].value+'","'+s[0].value+'","'+i[4].value+'","'+i[5].value+'","'+s[1].value+'"\n'});
-  }
-  var blob=new Blob([csv],{type:'text/csv'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='meadows-eye-'+tab+'-'+today()+'.csv';a.click();
-}
-
-loadAll();
+loadDashboard();
 </script>
 </body>
 </html>
