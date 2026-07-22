@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meadows Eye — Facilities Request</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#ffffff;--bg2:#f7f7f5;--bg3:#eeeee9;--text:#1a1a1a;--text2:#555;--text3:#999;--accent:#2563eb;--accent-bg:#eff6ff;--danger:#dc2626;--danger-bg:#fef2f2;--success:#16a34a;--success-bg:#f0fdf4;--warning:#d97706;--warning-bg:#fffbeb;--border:#e5e5e5;--border2:#d4d4d4;--radius:10px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#1a1a1a;--bg2:#252525;--bg3:#333;--text:#e5e5e5;--text2:#aaa;--text3:#777;--accent:#60a5fa;--accent-bg:#1e3a5f;--danger:#f87171;--danger-bg:#4c1919;--success:#4ade80;--success-bg:#14532d;--warning:#fbbf24;--warning-bg:#451a03;--border:#333;--border2:#444}}
+body{font-family:var(--font);background:var(--bg2);color:var(--text);line-height:1.5;min-height:100vh;padding:20px}
+.container{max-width:640px;margin:0 auto}
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;margin-bottom:16px}
+.header{text-align:center;margin-bottom:8px}
+.header h1{font-size:22px;font-weight:600;margin-bottom:4px}
+.header p{font-size:14px;color:var(--text2)}
+.priority-bar{display:flex;gap:8px;padding:14px 16px;border-radius:var(--radius);margin-bottom:20px;font-size:13px;align-items:center}
+.priority-bar.urgent{background:var(--danger-bg);color:var(--danger)}
+.priority-bar.normal{background:var(--accent-bg);color:var(--accent)}
+.priority-bar i{font-size:18px;flex-shrink:0}
+.form-group{margin-bottom:20px}
+.form-group label{display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:var(--text)}
+.form-group .hint{font-size:12px;color:var(--text3);margin-top:4px}
+.required::after{content:" *";color:var(--danger)}
+input[type="text"],input[type="date"],input[type="time"],textarea,select{width:100%;font-size:14px;padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-family:var(--font);transition:border-color .15s}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+textarea{resize:vertical;min-height:100px}
+select{appearance:auto}
+.radio-group{display:flex;flex-wrap:wrap;gap:8px}
+.radio-opt{flex:1;min-width:120px}
+.radio-opt input{display:none}
+.radio-opt label{display:block;padding:10px 14px;border:1px solid var(--border);border-radius:6px;text-align:center;font-size:13px;cursor:pointer;transition:all .15s}
+.radio-opt input:checked+label{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);font-weight:500}
+.radio-opt label:hover{border-color:var(--border2);background:var(--bg2)}
+.priority-group .radio-opt:nth-child(1) input:checked+label{border-color:var(--danger);background:var(--danger-bg);color:var(--danger)}
+.priority-group .radio-opt:nth-child(2) input:checked+label{border-color:var(--warning);background:var(--warning-bg);color:var(--warning)}
+.priority-group .radio-opt:nth-child(3) input:checked+label{border-color:var(--success);background:var(--success-bg);color:var(--success)}
+.btn{width:100%;padding:14px;font-size:15px;font-weight:600;border:none;border-radius:6px;cursor:pointer;font-family:var(--font);transition:opacity .15s}
+.btn-submit{background:var(--accent);color:#fff}.btn-submit:hover{opacity:.9}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed}
+.btn-reset{background:none;color:var(--text3);border:1px solid var(--border);margin-top:8px;font-weight:400;font-size:13px}
+.success-msg{display:none;text-align:center;padding:40px 20px}
+.success-msg h2{font-size:20px;margin-bottom:8px;color:var(--success)}
+.success-msg p{font-size:14px;color:var(--text2);margin-bottom:20px}
+.success-msg .ticket{font-size:28px;font-weight:700;color:var(--accent);margin-bottom:4px}
+.request-list{margin-top:20px}
+.request-list h3{font-size:14px;font-weight:500;color:var(--text2);margin-bottom:12px}
+.req-item{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border:1px solid var(--border);border-radius:6px;margin-bottom:8px;font-size:13px}
+.req-item .req-id{font-weight:600;color:var(--accent)}
+.req-item .req-meta{color:var(--text2);font-size:12px}
+.req-status{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px}
+.status-open{background:var(--warning-bg);color:var(--warning)}
+.status-progress{background:var(--accent-bg);color:var(--accent)}
+.status-done{background:var(--success-bg);color:var(--success)}
+.tab-row{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border)}
+.tab-btn{padding:10px 16px;font-size:13px;font-weight:500;border:none;background:none;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;font-family:var(--font)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.admin-badge{font-size:11px;background:var(--bg3);color:var(--text2);padding:2px 8px;border-radius:4px;margin-left:6px}
+.count-badge{background:var(--danger);color:#fff;font-size:11px;padding:1px 7px;border-radius:10px;margin-left:4px}
+@media(max-width:500px){.card{padding:20px 16px}.radio-opt{min-width:90px}}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card">
+    <div class="header">
+      <h1>Meadows Eye Facilities</h1>
+      <p>Submit a maintenance or repair request</p>
+    </div>
+  </div>
+
+  <div class="tab-row">
+    <button class="tab-btn active" data-tab="form">New request</button>
+    <button class="tab-btn" data-tab="history">My requests <span class="count-badge" id="open-count" style="display:none">0</span></button>
+    <button class="tab-btn" data-tab="admin">Admin<span class="admin-badge">Facilities</span></button>
+  </div>
+
+  <!-- NEW REQUEST FORM -->
+  <div class="tab-panel active" id="panel-form">
+    <div class="card" id="form-card">
+      <div class="form-group">
+        <label class="required">Your name</label>
+        <input type="text" id="f-name" placeholder="First and last name">
+      </div>
+
+      <div class="form-group">
+        <label class="required">Location</label>
+        <select id="f-location">
+          <option value="">Select location...</option>
+          <option>Henderson</option>
+          <option>Camino</option>
+          <option>Edna</option>
+          <option>East</option>
+          <option>Southwest</option>
+          <option>Pahrump</option>
+          <option>Centennial</option>
+          <option>Smoke Ranch</option>
+          <option>Admin 1090</option>
+          <option>Surgery Center</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="required">Category</label>
+        <select id="f-category">
+          <option value="">Select category...</option>
+          <option>Equipment — diagnostic (OCT, slit lamp, visual field, etc.)</option>
+          <option>Equipment — surgical</option>
+          <option>Equipment — other (printer, phone, computer)</option>
+          <option>HVAC — too hot / too cold / humidity</option>
+          <option>Electrical — lights, outlets, power</option>
+          <option>Plumbing — leak, drain, water</option>
+          <option>Furniture — chairs, desks, cabinets</option>
+          <option>Safety — fire extinguisher, exit sign, trip hazard</option>
+          <option>Cleaning / Janitorial</option>
+          <option>Doors / Locks / Keys / Badges</option>
+          <option>Pest issue</option>
+          <option>Signage</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="required">Priority</label>
+        <div class="radio-group priority-group">
+          <div class="radio-opt">
+            <input type="radio" name="priority" id="p-urgent" value="Urgent">
+            <label for="p-urgent">🔴 Urgent<br><span style="font-size:11px;font-weight:400">Patient care blocked</span></label>
+          </div>
+          <div class="radio-opt">
+            <input type="radio" name="priority" id="p-soon" value="Soon">
+            <label for="p-soon">🟡 Soon<br><span style="font-size:11px;font-weight:400">Working but needs fix</span></label>
+          </div>
+          <div class="radio-opt">
+            <input type="radio" name="priority" id="p-low" value="Low" checked>
+            <label for="p-low">🟢 Low<br><span style="font-size:11px;font-weight:400">When you get to it</span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="required">What's the issue?</label>
+        <textarea id="f-issue" placeholder="Describe the problem. Include room number, equipment name/model if you know it, and what's happening."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Equipment name or asset tag (if applicable)</label>
+        <input type="text" id="f-equipment" placeholder="e.g. Zeiss Cirrus OCT, Room 3 slit lamp">
+      </div>
+
+      <div class="form-group">
+        <label>Best time to access the area?</label>
+        <input type="text" id="f-access" placeholder="e.g. Before 8am, lunch break, after last patient">
+      </div>
+
+      <button class="btn btn-submit" id="submit-btn" onclick="submitRequest()">Submit request</button>
+      <button class="btn btn-reset" onclick="resetForm()">Clear form</button>
+    </div>
+
+    <!-- Success message -->
+    <div class="card success-msg" id="success-card">
+      <div style="font-size:48px;margin-bottom:12px">✅</div>
+      <h2>Request submitted</h2>
+      <p>Your ticket number:</p>
+      <div class="ticket" id="ticket-num"></div>
+      <p>The facilities team has been notified. You can check the status in "My requests."</p>
+      <button class="btn btn-submit" onclick="newRequest()" style="max-width:200px;margin:0 auto">Submit another</button>
+    </div>
+  </div>
+
+  <!-- MY REQUESTS -->
+  <div class="tab-panel" id="panel-history">
+    <div class="card">
+      <div class="request-list" id="my-requests">
+        <p style="font-size:14px;color:var(--text3);text-align:center;padding:20px 0">No requests yet. Submit one using the form.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div class="tab-panel" id="panel-admin">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+        <h3 style="font-size:15px;font-weight:600">All requests</h3>
+        <div style="display:flex;gap:8px">
+          <select id="admin-filter" style="width:140px;font-size:12px;padding:6px 8px">
+            <option value="">All statuses</option>
+            <option value="Open">Open</option>
+            <option value="In progress">In progress</option>
+            <option value="Done">Done</option>
+          </select>
+          <select id="admin-loc-filter" style="width:140px;font-size:12px;padding:6px 8px">
+            <option value="">All locations</option>
+            <option>Henderson</option><option>Camino</option><option>Edna</option><option>East</option>
+            <option>Southwest</option><option>Pahrump</option><option>Centennial</option>
+            <option>Smoke Ranch</option><option>Admin 1090</option><option>Surgery Center</option>
+          </select>
+          <button class="btn" style="padding:6px 12px;font-size:12px;white-space:nowrap" onclick="exportRequests()">Export CSV</button>
+        </div>
+      </div>
+      <div id="admin-list"></div>
+      <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+        <div style="display:flex;gap:16px;font-size:13px;color:var(--text2);flex-wrap:wrap">
+          <span>Total: <strong id="admin-total">0</strong></span>
+          <span>Open: <strong id="admin-open" style="color:var(--warning)">0</strong></span>
+          <span>In progress: <strong id="admin-ip" style="color:var(--accent)">0</strong></span>
+          <span>Done: <strong id="admin-done" style="color:var(--success)">0</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;font-size:12px;color:var(--text3);margin-top:12px">
+    Meadows Eye Facilities Team · Requests saved locally in this browser
+  </div>
+</div>
+
+<script>
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('panel-'+t.dataset.tab).classList.add('active');
+    if(t.dataset.tab==='history')renderMyRequests();
+    if(t.dataset.tab==='admin')renderAdmin();
+  });
+});
+
+function getRequests(){
+  try{return JSON.parse(localStorage.getItem('me_requests'))||[]}catch(e){return[]}
+}
+function saveRequests(r){localStorage.setItem('me_requests',JSON.stringify(r))}
+
+function generateId(){
+  var d=new Date();
+  var prefix='ME';
+  var num=String(Math.floor(Math.random()*9000)+1000);
+  return prefix+'-'+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'-'+num;
+}
+
+function submitRequest(){
+  var name=document.getElementById('f-name').value.trim();
+  var loc=document.getElementById('f-location').value;
+  var cat=document.getElementById('f-category').value;
+  var priority=document.querySelector('input[name="priority"]:checked').value;
+  var issue=document.getElementById('f-issue').value.trim();
+  var equip=document.getElementById('f-equipment').value.trim();
+  var access=document.getElementById('f-access').value.trim();
+
+  if(!name||!loc||!cat||!issue){
+    alert('Please fill in all required fields (name, location, category, and issue description).');
+    return;
+  }
+
+  var id=generateId();
+  var req={
+    id:id,
+    name:name,
+    location:loc,
+    category:cat,
+    priority:priority,
+    issue:issue,
+    equipment:equip,
+    access:access,
+    status:'Open',
+    submitted:new Date().toISOString(),
+    notes:''
+  };
+
+  var requests=getRequests();
+  requests.unshift(req);
+  saveRequests(requests);
+
+  document.getElementById('ticket-num').textContent=id;
+  document.getElementById('form-card').style.display='none';
+  document.getElementById('success-card').style.display='block';
+  updateOpenCount();
+}
+
+function newRequest(){
+  resetForm();
+  document.getElementById('form-card').style.display='block';
+  document.getElementById('success-card').style.display='none';
+}
+
+function resetForm(){
+  document.getElementById('f-name').value='';
+  document.getElementById('f-location').value='';
+  document.getElementById('f-category').value='';
+  document.getElementById('f-issue').value='';
+  document.getElementById('f-equipment').value='';
+  document.getElementById('f-access').value='';
+  document.getElementById('p-low').checked=true;
+}
+
+function renderMyRequests(){
+  var requests=getRequests();
+  var container=document.getElementById('my-requests');
+  if(requests.length===0){
+    container.innerHTML='<p style="font-size:14px;color:var(--text3);text-align:center;padding:20px 0">No requests yet.</p>';
+    return;
+  }
+  var h='';
+  requests.forEach(r=>{
+    var statusCls=r.status==='Open'?'status-open':r.status==='In progress'?'status-progress':'status-done';
+    var date=new Date(r.submitted).toLocaleDateString();
+    var priorityDot=r.priority==='Urgent'?'🔴 ':r.priority==='Soon'?'🟡 ':'🟢 ';
+    h+='<div class="req-item"><div><span class="req-id">'+r.id+'</span><div class="req-meta">'+priorityDot+r.location+' · '+r.category+'</div><div class="req-meta">'+date+' — '+r.issue.substring(0,80)+(r.issue.length>80?'...':'')+'</div>'+(r.notes?'<div class="req-meta" style="margin-top:4px;color:var(--accent)">📝 '+r.notes+'</div>':'')+'</div><span class="req-status '+statusCls+'">'+r.status+'</span></div>';
+  });
+  container.innerHTML=h;
+}
+
+function renderAdmin(){
+  var requests=getRequests();
+  var statusFilter=document.getElementById('admin-filter').value;
+  var locFilter=document.getElementById('admin-loc-filter').value;
+  var filtered=requests.filter(r=>{
+    if(statusFilter&&r.status!==statusFilter)return false;
+    if(locFilter&&r.location!==locFilter)return false;
+    return true;
+  });
+
+  var container=document.getElementById('admin-list');
+  if(filtered.length===0){
+    container.innerHTML='<p style="font-size:14px;color:var(--text3);text-align:center;padding:20px 0">No requests match filters.</p>';
+  }else{
+    var h='';
+    filtered.forEach((r,i)=>{
+      var priorityDot=r.priority==='Urgent'?'🔴':r.priority==='Soon'?'🟡':'🟢';
+      var date=new Date(r.submitted).toLocaleDateString();
+      h+='<div style="border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:10px">';
+      h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;flex-wrap:wrap;gap:8px">';
+      h+='<div><span style="font-weight:600;color:var(--accent)">'+r.id+'</span> <span style="font-size:12px;color:var(--text3)">'+date+'</span></div>';
+      h+='<div style="display:flex;gap:6px;align-items:center">';
+      h+='<span style="font-size:14px">'+priorityDot+'</span>';
+      h+='<select onchange="updateStatus(\''+r.id+'\',this.value)" style="font-size:12px;padding:4px 8px;width:auto">';
+      ['Open','In progress','Done'].forEach(s=>{h+='<option'+(r.status===s?' selected':'')+'>'+s+'</option>'});
+      h+='</select></div></div>';
+      h+='<div style="font-size:13px;margin-bottom:4px"><strong>'+r.name+'</strong> · '+r.location+'</div>';
+      h+='<div style="font-size:13px;margin-bottom:4px;color:var(--text2)">'+r.category+(r.equipment?' · '+r.equipment:'')+'</div>';
+      h+='<div style="font-size:13px;margin-bottom:8px">'+r.issue+'</div>';
+      if(r.access){h+='<div style="font-size:12px;color:var(--text3)">🕐 Best access: '+r.access+'</div>'}
+      h+='<div style="margin-top:8px"><input type="text" placeholder="Add a note (visible to requester)..." value="'+(r.notes||'')+'" onchange="updateNote(\''+r.id+'\',this.value)" style="font-size:12px;padding:6px 8px"></div>';
+      h+='</div>';
+    });
+    container.innerHTML=h;
+  }
+
+  var open=requests.filter(r=>r.status==='Open').length;
+  var ip=requests.filter(r=>r.status==='In progress').length;
+  var done=requests.filter(r=>r.status==='Done').length;
+  document.getElementById('admin-total').textContent=requests.length;
+  document.getElementById('admin-open').textContent=open;
+  document.getElementById('admin-ip').textContent=ip;
+  document.getElementById('admin-done').textContent=done;
+}
+
+function updateStatus(id,status){
+  var requests=getRequests();
+  var r=requests.find(x=>x.id===id);
+  if(r){r.status=status;saveRequests(requests);renderAdmin();updateOpenCount()}
+}
+
+function updateNote(id,note){
+  var requests=getRequests();
+  var r=requests.find(x=>x.id===id);
+  if(r){r.notes=note;saveRequests(requests)}
+}
+
+function updateOpenCount(){
+  var open=getRequests().filter(r=>r.status==='Open').length;
+  var badge=document.getElementById('open-count');
+  if(open>0){badge.textContent=open;badge.style.display='inline'}
+  else{badge.style.display='none'}
+}
+
+function exportRequests(){
+  var requests=getRequests();
+  var csv='Ticket,Date,Name,Location,Category,Priority,Equipment,Issue,Access Time,Status,Notes\n';
+  requests.forEach(r=>{
+    csv+='"'+r.id+'","'+new Date(r.submitted).toLocaleDateString()+'","'+r.name+'","'+r.location+'","'+r.category+'","'+r.priority+'","'+(r.equipment||'')+'","'+r.issue.replace(/"/g,'""')+'","'+(r.access||'')+'","'+r.status+'","'+(r.notes||'')+'"\n';
+  });
+  var blob=new Blob([csv],{type:'text/csv'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='facilities-requests-'+new Date().toISOString().split('T')[0]+'.csv';a.click();
+}
+
+// Filter listeners
+document.getElementById('admin-filter').addEventListener('change',renderAdmin);
+document.getElementById('admin-loc-filter').addEventListener('change',renderAdmin);
+
+// Init
+updateOpenCount();
+</script>
+</body>
+</html>

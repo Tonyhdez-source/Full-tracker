@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meadows Eye — PM Calendar</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#ffffff;--bg2:#f7f7f5;--bg3:#eeeee9;--text:#1a1a1a;--text2:#555;--text3:#999;--accent:#2563eb;--accent-bg:#eff6ff;--accent-text:#1e40af;--danger:#dc2626;--danger-bg:#fef2f2;--danger-text:#991b1b;--success:#16a34a;--success-bg:#f0fdf4;--success-text:#166534;--warning:#d97706;--warning-bg:#fffbeb;--warning-text:#92400e;--border:#e5e5e5;--border2:#d4d4d4;--radius:10px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#1a1a1a;--bg2:#252525;--bg3:#333;--text:#e5e5e5;--text2:#aaa;--text3:#777;--accent:#60a5fa;--accent-bg:#1e3a5f;--accent-text:#93c5fd;--danger:#f87171;--danger-bg:#4c1919;--danger-text:#fca5a5;--success:#4ade80;--success-bg:#14532d;--success-text:#86efac;--warning:#fbbf24;--warning-bg:#451a03;--warning-text:#fcd34d;--border:#333;--border2:#444}}
+body{font-family:var(--font);background:var(--bg2);color:var(--text);line-height:1.5;min-height:100vh;padding:20px}
+.app{max-width:1100px;margin:0 auto}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.header h1{font-size:20px;font-weight:600}
+.header-sub{font-size:13px;color:var(--text2)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.stat-label{font-size:12px;color:var(--text2)}
+.stat-val{font-size:24px;font-weight:600;margin-top:2px}
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.section-head h2{font-size:16px;font-weight:600}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filters select,.filters input{font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-family:var(--font)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--bg2);font-weight:500;font-size:12px;color:var(--text2);text-align:left;padding:10px 12px;border-bottom:1px solid var(--border2);position:sticky;top:0}
+td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:hover td{background:var(--bg2)}
+input[type="text"],input[type="date"],select{width:100%;font-size:12px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text);font-family:var(--font)}
+input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-bg)}
+.badge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;display:inline-block}
+.b-weekly{background:var(--danger-bg);color:var(--danger-text)}
+.b-monthly{background:var(--warning-bg);color:var(--warning-text)}
+.b-quarterly{background:var(--accent-bg);color:var(--accent-text)}
+.b-annually{background:var(--success-bg);color:var(--success-text)}
+.b-overdue{background:var(--danger-bg);color:var(--danger-text);font-weight:600}
+.b-due{background:var(--warning-bg);color:var(--warning-text)}
+.b-ok{background:var(--success-bg);color:var(--success-text)}
+.btn{padding:8px 16px;font-size:13px;border:1px solid var(--border2);border-radius:6px;background:var(--bg);color:var(--text);cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:var(--font)}
+.btn:hover{background:var(--bg2)}.btn:active{transform:scale(0.98)}
+.btn-accent{background:var(--accent);color:#fff;border-color:var(--accent)}.btn-accent:hover{opacity:.9}
+.btn-sm{padding:4px 10px;font-size:12px}
+.actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius)}
+.table-wrap table{margin:0}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg);border-radius:var(--radius);padding:24px;max-width:500px;width:90%;max-height:90vh;overflow-y:auto}
+.modal h3{font-size:16px;margin-bottom:16px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:13px;font-weight:500;margin-bottom:4px}
+.complete-btn{cursor:pointer;padding:4px 10px;font-size:12px;border:1px solid var(--success);color:var(--success);background:none;border-radius:4px;font-family:var(--font)}
+.complete-btn:hover{background:var(--success-bg)}
+@media(max-width:768px){.stats{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="header">
+  <div>
+    <h1><i class="ti ti-calendar-check" style="vertical-align:-2px;margin-right:6px"></i>Preventive Maintenance Calendar</h1>
+    <div class="header-sub">Meadows Eye Facilities</div>
+  </div>
+  <div style="font-size:12px;color:var(--text3)">Data saved locally</div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-label">Total PM tasks</div><div class="stat-val" id="s-total">0</div></div>
+  <div class="stat"><div class="stat-label">Overdue</div><div class="stat-val" id="s-overdue" style="color:var(--danger)">0</div></div>
+  <div class="stat"><div class="stat-label">Due this week</div><div class="stat-val" id="s-due" style="color:var(--warning)">0</div></div>
+  <div class="stat"><div class="stat-label">Completed this month</div><div class="stat-val" id="s-done" style="color:var(--success)">0</div></div>
+</div>
+
+<div class="card">
+  <div class="section-head">
+    <h2>PM Schedule</h2>
+    <div class="filters">
+      <select id="f-freq"><option value="">All frequencies</option><option>Weekly</option><option>Monthly</option><option>Quarterly</option><option>Annually</option></select>
+      <select id="f-loc"><option value="">All locations</option>
+        <option>Henderson</option><option>Camino</option><option>Edna</option><option>East</option>
+        <option>Southwest</option><option>Pahrump</option><option>Centennial</option>
+        <option>Smoke Ranch</option><option>Admin 1090</option><option>Surgery Center</option><option>All locations</option>
+      </select>
+      <select id="f-status"><option value="">All statuses</option><option>Overdue</option><option>Due soon</option><option>On track</option></select>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th style="width:50px">Status</th>
+        <th style="width:200px">Task</th>
+        <th style="width:100px">Frequency</th>
+        <th style="width:120px">Location</th>
+        <th style="width:100px">Assigned to</th>
+        <th style="width:100px">Last done</th>
+        <th style="width:100px">Next due</th>
+        <th style="width:120px">Actions</th>
+      </tr></thead>
+      <tbody id="pm-body"></tbody>
+    </table>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-accent" onclick="showAddModal()"><i class="ti ti-plus"></i>Add PM task</button>
+    <button class="btn" onclick="exportPM()"><i class="ti ti-download"></i>Export CSV</button>
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="font-size:16px;margin-bottom:12px">Completion Log</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th style="width:100px">Date</th>
+        <th style="width:200px">Task</th>
+        <th style="width:120px">Location</th>
+        <th style="width:100px">Done by</th>
+        <th style="width:200px">Notes</th>
+      </tr></thead>
+      <tbody id="log-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modal-title">Add PM Task</h3>
+    <div class="form-group"><label>Task name</label><input type="text" id="m-task" placeholder="e.g. Replace HVAC filters"></div>
+    <div class="form-group"><label>Category</label>
+      <select id="m-cat">
+        <option>HVAC</option><option>Electrical</option><option>Plumbing</option>
+        <option>Ophthalmic equipment</option><option>Surgical equipment</option><option>Sterilization</option>
+        <option>Fire / Safety</option><option>Janitorial</option><option>IT / Network</option>
+        <option>Building exterior</option><option>General</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Frequency</label>
+      <select id="m-freq"><option>Weekly</option><option>Monthly</option><option>Quarterly</option><option>Annually</option></select>
+    </div>
+    <div class="form-group"><label>Location</label>
+      <select id="m-loc">
+        <option>All locations</option><option>Henderson</option><option>Camino</option><option>Edna</option>
+        <option>East</option><option>Southwest</option><option>Pahrump</option><option>Centennial</option>
+        <option>Smoke Ranch</option><option>Admin 1090</option><option>Surgery Center</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Assigned to</label><input type="text" id="m-assign" placeholder="Team member name"></div>
+    <div class="form-group"><label>Last completed</label><input type="date" id="m-last"></div>
+    <div class="form-group"><label>Notes / procedure</label><input type="text" id="m-notes" placeholder="Any special instructions"></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-accent" onclick="saveTask()" style="flex:1">Save</button>
+      <button class="btn" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+var LOCS=["Henderson","Camino","Edna","East","Southwest","Pahrump","Centennial","Smoke Ranch","Admin 1090","Surgery Center","All locations"];
+var FREQ_DAYS={Weekly:7,Monthly:30,Quarterly:90,Annually:365};
+
+// Default PM tasks for ophthalmology practice
+var DEFAULT_TASKS=[
+  {task:"Replace HVAC filters",cat:"HVAC",freq:"Monthly",loc:"All locations",assign:"",last:"",notes:"Check all units, replace as needed"},
+  {task:"Replace water filters",cat:"Plumbing",freq:"Quarterly",loc:"All locations",assign:"",last:"",notes:"Under-sink filters in sterilization rooms"},
+  {task:"Autoclave validation test",cat:"Sterilization",freq:"Weekly",loc:"Surgery Center",assign:"",last:"",notes:"Biological indicator spore test"},
+  {task:"Emergency lighting test",cat:"Electrical",freq:"Monthly",loc:"All locations",assign:"",last:"",notes:"Test all exit signs and emergency lights for 30 seconds"},
+  {task:"Fire extinguisher inspection",cat:"Fire / Safety",freq:"Monthly",loc:"All locations",assign:"",last:"",notes:"Visual check — pin, seal, pressure gauge"},
+  {task:"Fire extinguisher certification",cat:"Fire / Safety",freq:"Annually",loc:"All locations",assign:"",last:"",notes:"Professional inspection — schedule vendor"},
+  {task:"OCT machine calibration check",cat:"Ophthalmic equipment",freq:"Monthly",loc:"All locations",assign:"",last:"",notes:"Run test scan, verify alignment"},
+  {task:"Slit lamp bulb check",cat:"Ophthalmic equipment",freq:"Monthly",loc:"All locations",assign:"",last:"",notes:"Check brightness, replace dim bulbs"},
+  {task:"Visual field analyzer calibration",cat:"Ophthalmic equipment",freq:"Quarterly",loc:"All locations",assign:"",last:"",notes:"Run Zeiss standard calibration protocol"},
+  {task:"Phoropter cleaning & alignment",cat:"Ophthalmic equipment",freq:"Quarterly",loc:"All locations",assign:"",last:"",notes:"Clean lenses, check axis alignment"},
+  {task:"Surgical microscope PM",cat:"Surgical equipment",freq:"Quarterly",loc:"Surgery Center",assign:"",last:"",notes:"Schedule with Zeiss/vendor"},
+  {task:"Phaco machine PM",cat:"Surgical equipment",freq:"Quarterly",loc:"Surgery Center",assign:"",last:"",notes:"Schedule with Alcon"},
+  {task:"Generator test run",cat:"Electrical",freq:"Monthly",loc:"Surgery Center",assign:"",last:"",notes:"15-minute test run under load"},
+  {task:"Pest control service",cat:"General",freq:"Monthly",loc:"All locations",assign:"",last:"",notes:"Vendor scheduled service"},
+  {task:"Deep cleaning — exam rooms",cat:"Janitorial",freq:"Quarterly",loc:"All locations",assign:"",last:"",notes:"Walls, baseboards, vents, behind equipment"},
+  {task:"HVAC annual service",cat:"HVAC",freq:"Annually",loc:"All locations",assign:"",last:"",notes:"Full system inspection — schedule vendor"},
+  {task:"Roof / exterior inspection",cat:"Building exterior",freq:"Annually",loc:"All locations",assign:"",last:"",notes:"Check for leaks, damage, drainage"},
+  {task:"UPS battery test",cat:"IT / Network",freq:"Quarterly",loc:"All locations",assign:"",last:"",notes:"Test backup power on critical systems"},
+  {task:"Network switch / router check",cat:"IT / Network",freq:"Quarterly",loc:"All locations",assign:"",last:"",notes:"Firmware updates, check logs"},
+  {task:"Elevator inspection",cat:"General",freq:"Annually",loc:"All locations",assign:"",last:"",notes:"State-required annual inspection"},
+];
+
+function getTasks(){try{return JSON.parse(localStorage.getItem('me_pm_tasks'))}catch(e){return null}}
+function saveTasks(t){localStorage.setItem('me_pm_tasks',JSON.stringify(t))}
+function getLog(){try{return JSON.parse(localStorage.getItem('me_pm_log'))||[]}catch(e){return[]}}
+function saveLog(l){localStorage.setItem('me_pm_log',JSON.stringify(l))}
+
+function calcNextDue(lastDate,freq){
+  if(!lastDate)return null;
+  var d=new Date(lastDate+'T00:00:00');
+  var days=FREQ_DAYS[freq]||30;
+  d.setDate(d.getDate()+days);
+  return d;
+}
+
+function getStatus(task){
+  if(!task.last)return{status:'Overdue',cls:'b-overdue',label:'No record'};
+  var next=calcNextDue(task.last,task.freq);
+  var now=new Date();now.setHours(0,0,0,0);
+  var diff=Math.ceil((next-now)/(1000*60*60*24));
+  if(diff<0)return{status:'Overdue',cls:'b-overdue',label:Math.abs(diff)+' days overdue'};
+  if(diff<=7)return{status:'Due soon',cls:'b-due',label:'Due in '+diff+' days'};
+  return{status:'On track',cls:'b-ok',label:'Due in '+diff+' days'};
+}
+
+var editIdx=-1;
+
+function render(){
+  var tasks=getTasks()||DEFAULT_TASKS;
+  var freqF=document.getElementById('f-freq').value;
+  var locF=document.getElementById('f-loc').value;
+  var statusF=document.getElementById('f-status').value;
+
+  var filtered=tasks.filter(function(t){
+    if(freqF&&t.freq!==freqF)return false;
+    if(locF&&t.loc!==locF)return false;
+    if(statusF){var s=getStatus(t);if(s.status!==statusF)return false}
+    return true;
+  });
+
+  // Sort: overdue first, then due soon, then on track
+  filtered.sort(function(a,b){
+    var sa=getStatus(a),sb=getStatus(b);
+    var order={Overdue:0,'Due soon':1,'On track':2};
+    return(order[sa.status]||2)-(order[sb.status]||2);
+  });
+
+  var h='';
+  filtered.forEach(function(t,i){
+    var realIdx=tasks.indexOf(t);
+    var s=getStatus(t);
+    var freqCls='b-'+t.freq.toLowerCase();
+    var nextDue=t.last?calcNextDue(t.last,t.freq).toLocaleDateString():'—';
+    h+='<tr>';
+    h+='<td><span class="badge '+s.cls+'">'+s.label+'</span></td>';
+    h+='<td><strong>'+t.task+'</strong><div style="font-size:11px;color:var(--text3)">'+t.cat+(t.notes?' · '+t.notes:'')+'</div></td>';
+    h+='<td><span class="badge '+freqCls+'">'+t.freq+'</span></td>';
+    h+='<td style="font-size:12px">'+t.loc+'</td>';
+    h+='<td style="font-size:12px">'+(t.assign||'<span style="color:var(--text3)">Unassigned</span>')+'</td>';
+    h+='<td style="font-size:12px">'+(t.last||'<span style="color:var(--danger)">Never</span>')+'</td>';
+    h+='<td style="font-size:12px">'+nextDue+'</td>';
+    h+='<td><button class="complete-btn" onclick="completeTask('+realIdx+')"><i class="ti ti-check" style="font-size:12px"></i> Done</button> ';
+    h+='<button class="btn-sm btn" onclick="editTask('+realIdx+')" style="margin-left:4px"><i class="ti ti-pencil" style="font-size:12px"></i></button> ';
+    h+='<button class="btn-sm btn" onclick="deleteTask('+realIdx+')" style="color:var(--danger);border-color:var(--danger)"><i class="ti ti-trash" style="font-size:12px"></i></button>';
+    h+='</td></tr>';
+  });
+  document.getElementById('pm-body').innerHTML=h||'<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:20px">No tasks match filters</td></tr>';
+
+  // Stats
+  var overdue=0,dueSoon=0,doneMonth=0;
+  var now=new Date();var monthStart=new Date(now.getFullYear(),now.getMonth(),1);
+  tasks.forEach(function(t){
+    var s=getStatus(t);
+    if(s.status==='Overdue')overdue++;
+    if(s.status==='Due soon')dueSoon++;
+  });
+  var log=getLog();
+  log.forEach(function(l){if(new Date(l.date)>=monthStart)doneMonth++});
+
+  document.getElementById('s-total').textContent=tasks.length;
+  document.getElementById('s-overdue').textContent=overdue;
+  document.getElementById('s-due').textContent=dueSoon;
+  document.getElementById('s-done').textContent=doneMonth;
+
+  renderLog();
+}
+
+function renderLog(){
+  var log=getLog().slice(0,50);
+  var h='';
+  log.forEach(function(l){
+    h+='<tr><td style="font-size:12px">'+l.date+'</td><td>'+l.task+'</td><td style="font-size:12px">'+l.loc+'</td><td style="font-size:12px">'+l.by+'</td><td style="font-size:12px;color:var(--text2)">'+(l.notes||'')+'</td></tr>';
+  });
+  document.getElementById('log-body').innerHTML=h||'<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px">No completions logged yet</td></tr>';
+}
+
+function completeTask(idx){
+  var tasks=getTasks()||DEFAULT_TASKS;
+  var t=tasks[idx];
+  var by=prompt('Who completed this? (initials or name)');
+  if(by===null)return;
+  var notes=prompt('Any notes? (leave blank if none)');
+
+  t.last=new Date().toISOString().split('T')[0];
+  saveTasks(tasks);
+
+  var log=getLog();
+  log.unshift({date:t.last,task:t.task,loc:t.loc,by:by||'—',notes:notes||''});
+  saveLog(log);
+  render();
+}
+
+function showAddModal(){
+  editIdx=-1;
+  document.getElementById('modal-title').textContent='Add PM Task';
+  document.getElementById('m-task').value='';
+  document.getElementById('m-cat').value='HVAC';
+  document.getElementById('m-freq').value='Monthly';
+  document.getElementById('m-loc').value='All locations';
+  document.getElementById('m-assign').value='';
+  document.getElementById('m-last').value='';
+  document.getElementById('m-notes').value='';
+  document.getElementById('modal').classList.add('show');
+}
+
+function editTask(idx){
+  var tasks=getTasks()||DEFAULT_TASKS;
+  var t=tasks[idx];
+  editIdx=idx;
+  document.getElementById('modal-title').textContent='Edit PM Task';
+  document.getElementById('m-task').value=t.task;
+  document.getElementById('m-cat').value=t.cat;
+  document.getElementById('m-freq').value=t.freq;
+  document.getElementById('m-loc').value=t.loc;
+  document.getElementById('m-assign').value=t.assign||'';
+  document.getElementById('m-last').value=t.last||'';
+  document.getElementById('m-notes').value=t.notes||'';
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+
+function saveTask(){
+  var task={
+    task:document.getElementById('m-task').value.trim(),
+    cat:document.getElementById('m-cat').value,
+    freq:document.getElementById('m-freq').value,
+    loc:document.getElementById('m-loc').value,
+    assign:document.getElementById('m-assign').value.trim(),
+    last:document.getElementById('m-last').value,
+    notes:document.getElementById('m-notes').value.trim()
+  };
+  if(!task.task){alert('Task name is required');return}
+  var tasks=getTasks()||DEFAULT_TASKS.slice();
+  if(editIdx>=0){tasks[editIdx]=task}else{tasks.push(task)}
+  saveTasks(tasks);
+  closeModal();
+  render();
+}
+
+function deleteTask(idx){
+  if(!confirm('Delete this PM task?'))return;
+  var tasks=getTasks()||DEFAULT_TASKS.slice();
+  tasks.splice(idx,1);
+  saveTasks(tasks);
+  render();
+}
+
+function exportPM(){
+  var tasks=getTasks()||DEFAULT_TASKS;
+  var csv='Task,Category,Frequency,Location,Assigned To,Last Done,Next Due,Status\n';
+  tasks.forEach(function(t){
+    var s=getStatus(t);
+    var next=t.last?calcNextDue(t.last,t.freq).toLocaleDateString():'Never done';
+    csv+='"'+t.task+'","'+t.cat+'","'+t.freq+'","'+t.loc+'","'+(t.assign||'')+'","'+(t.last||'Never')+'","'+next+'","'+s.label+'"\n';
+  });
+  var blob=new Blob([csv],{type:'text/csv'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='pm-schedule-'+new Date().toISOString().split('T')[0]+'.csv';a.click();
+}
+
+// Filter listeners
+document.getElementById('f-freq').addEventListener('change',render);
+document.getElementById('f-loc').addEventListener('change',render);
+document.getElementById('f-status').addEventListener('change',render);
+
+// Close modal on overlay click
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+
+render();
+</script>
+</body>
+</html>
